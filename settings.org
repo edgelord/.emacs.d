@@ -1,0 +1,250 @@
+* Packages
+** Setup Package Manager
+#+BEGIN_SRC emacs-lisp +n 
+  (require 'package)
+  (add-to-list 'package-archives
+               '("melpa" . "http://melpa.org/packages/") t)
+  (when (< emacs-major-version 24)
+  ;; For important compatibility libraries like cl-lib
+    (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
+  (package-initialize)
+
+  ; fetch the list of packages available 
+  (unless package-archive-contents
+    (package-refresh-contents))
+#+END_SRC
+** Package List
+#+BEGIN_SRC emacs-lisp +n
+  (setq package-list
+        '(helm
+          popwin
+
+          smartparens
+          rainbow-delimiters
+          
+          better-defaults
+          exec-path-from-shell
+          bash-completion
+          multiple-cursors
+          evil-nerd-commenter
+
+          god-mode
+
+          flycheck
+          magit
+
+          company
+          nlinum
+          undo-tree
+          
+          zenburn-theme
+          powerline
+          
+          ein
+          anaconda-mode
+          company-anaconda
+          pyenv-mode
+          virtualenvwrapper))
+#+END_SRC
+** Install packages
+#+BEGIN_SRC emacs-lisp +n
+  (dolist (package package-list) ;Installs missing packages
+    (unless (package-installed-p package)
+      (package-install package)))
+
+  (when (memq window-system '(mac ns))
+    (exec-path-from-shell-initialize))
+#+END_SRC
+* General Settings
+** UI
+#+BEGIN_SRC emacs-lisp +n
+  (require 'smartparens-config)
+  (require 'rainbow-delimiters)
+  (require 'bash-completion)
+  (require 'powerline)
+
+  (load-theme 'zenburn t)
+
+  (powerline-default-theme)
+  (smartparens-global-strict-mode)
+  (rainbow-delimiters-mode)
+  (bash-completion-setup)
+
+  (global-company-mode)
+  (global-flycheck-mode)
+  (global-hl-line-mode 1)
+
+  (setq ring-bell-function 'ignore)
+  (setq inhibit-startup-message t) 
+  (setq initial-buffer-choice "~/Development/agenda.org")
+  (setq initial-scratch-message nil)
+#+END_SRC
+** Autosave
+#+BEGIN_SRC emacs-lisp +n
+  (defvar my-auto-save-folder "~/.emacs.d/auto-save/")
+  (setq auto-save-list-file-prefix "~/.emacs.d/auto-save/.saves-"); set prefix for auto-saves 
+  (setq auto-save-file-name-transforms `((".*", my-auto-save-folder t))); location for all auto-save files
+  (setq tramp-auto-save-directory my-auto-save-folder)
+#+END_SRC
+** COMMENT God Mode
+#+BEGIN_SRC emacs-lisp +n
+  (require 'god-mode)
+  (global-set-key (kbd "<escape>") 'god-mode-all)
+  (defun my-update-cursor ()
+    (setq cursor-type (if (or god-local-mode buffer-read-only)
+                          'box
+                        'bar)))
+
+  (add-hook 'god-mode-enabled-hook 'my-update-cursor)
+  (add-hook 'god-mode-disabled-hook 'my-update-cursor)
+  ;; (god-mode-all)
+  (god-mode)
+  (global-set-key (kbd "<escape>") 'god-mode-activate)
+  (define-key god-local-mode-map (kbd "i") 'god-mode-all)
+  (define-key god-local-mode-map (kbd ".") 'repeat)
+  (define-key god-local-mode-map (kbd "V") 'set-rectangular-region-anchor)
+
+
+  (global-set-key (kbd "C-x C-1") 'delete-other-windows)
+  (global-set-key (kbd "C-x C-2") 'split-window-below)
+  (global-set-key (kbd "C-x C-3") 'split-window-right)
+  (global-set-key (kbd "C-x C-0") 'delete-window)
+
+#+END_SRC
+** Popwin
+#+BEGIN_SRC emacs-lisp +n
+  (require 'popwin)
+  (popwin-mode 1)
+#+END_SRC
+** Linum Mode
+#+BEGIN_SRC emacs-lisp +n
+  (setq nlinum-format " %d ")
+
+  (add-hook 'nlinum-mode-hook
+            (lambda ()
+              (setq nlinum--width
+                (length (number-to-string
+                         (count-lines (point-min) (point-max)))))))
+#+END_SRC
+** Multiple Cursors
+#+BEGIN_SRC emacs-lisp +n
+(require 'multiple-cursors)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+#+END_SRC
+** Helm
+#+BEGIN_SRC emacs-lisp +n
+  (require 'helm)
+  (require 'helm-config)
+
+  (global-set-key (kbd "C-c h") 'helm-command-prefix)
+  (global-set-key (kbd "M-x") 'helm-M-x)
+  (global-set-key (kbd "C-x C-f") 'helm-find-files)
+  (global-set-key (kbd "C-x C-b") 'helm-buffers-list)
+  ;; (defun /helm-find-files-navigate-forward (orig-fun &rest args)
+  ;;   (if (file-directory-p (helm-get-selection))
+  ;;       (apply orig-fun args)
+  ;;     (helm-maybe-exit-minibuffer)))
+  ;; (advice-add 'helm-execute-persistent-action :around #'/helm-find-files-navigate-forward)
+  ;; (define-key helm-find-files-map (kbd "<return>") 'helm-execute-persistent-action)
+
+  ;; (defun /helm-find-files-navigate-back (orig-fun &rest args)
+  ;;   (if (= (length helm-pattern) (length (helm-find-files-initial-input)))
+  ;;       (helm-find-files-up-one-level 1)
+  ;;     (apply orig-fun args)))
+  ;; (advice-add 'helm-ff-delete-char-backward :around #'/helm-find-files-navigate-back)
+
+  (push '("^\*helm.+\*$" :regexp t) popwin:special-display-config)
+
+  (add-hook 'helm-after-initialize-hook (lambda ()
+                                          (popwin:display-buffer helm-buffer t)
+                                          (popwin-mode -1)))
+
+  ;;  Restore popwin-mode after a Helm session finishes.
+  (add-hook 'helm-cleanup-hook (lambda () (popwin-mode 1)))
+#+END_SRC
+ 
+** Keybindings
+#+BEGIN_SRC emacs-lisp +n
+  (define-prefix-command 'my/exit)
+  (global-set-key (kbd "s-q") nil)
+  (global-set-key (kbd "s-q") 'my/exit)
+  (global-set-key (kbd "s-q s-q") 'kill-this-buffer)
+  (global-set-key (kbd "s-q s-r") 'exit-recursive-edit)
+  (global-set-key (kbd "s-i") 'sp-down-sexp)
+  (global-set-key (kbd "s-I") 'sp-backward-down-sexp)
+  (global-set-key (kbd "s-o") 'sp-up-sexp)
+  (global-set-key (kbd "s-O") 'sp-backward-up-sexp)
+  (global-set-key (kbd "s-d") 'sp-kill-sexp)
+  (global-set-key (kbd "s-f") 'sp-forward-sexp)
+  (global-set-key (kbd "s-b") 'sp-backward-sexp)
+  (global-set-key (kbd "s-(") '(lambda (&optional arg) (interactive "P") (sp-wrap-with-pair "(")))
+  (global-set-key (kbd "s-{") '(lambda (&optional arg) (interactive "P") (sp-wrap-with-pair "{")))
+  (global-set-key (kbd "s-[") '(lambda (&optional arg) (interactive "P") (sp-wrap-with-pair "[")))
+  (global-set-key (kbd "s-\"") '(lambda (&optional arg) (interactive "P") (sp-wrap-with-pair "\""))
+  (global-set-key (kbd "s-2") 'sp-splice-sexp))
+  (global-set-key (kbd "s-@") 'sp-splice-sexp-killing-around)
+  (global-set-key (kbd "s-1") 'sp-splice-sexp-killing-backward)
+  (global-set-key (kbd "s-3") 'sp-splice-sexp-killing-forward)
+  (global-set-key (kbd "C-c C-k") 'copy-line)
+  (global-set-key (kbd "s-<") 'previous-buffer)
+  (global-set-key (kbd "s->") 'next-buffer)
+  (require 'comint)
+  (define-key comint-mode-map (kbd "<up>") 'comint-previous-input)
+  (define-key comint-mode-map (kbd "<down>") 'comint-next-input)
+  (global-set-key (kbd "C-c t") 'shell)
+  (global-set-key (kbd "C-(") 'sp-backward-slurp-sexp)
+  (global-set-key (kbd "C-)") 'sp-forward-slurp-sexp)
+  (global-set-key (kbd "C-{") 'sp-backward-barf-sexp)
+  (global-set-key (kbd "C-}") 'sp-backward-barf-sexp)
+  ;;; Nerd commenter
+  (global-set-key (kbd "M-;") 'evilnc-comment-or-uncomment-lines)
+  (global-set-key (kbd "C-c l") 'evilnc-quick-comment-or-uncomment-to-the-line)
+  (global-set-key (kbd "C-c c") 'evilnc-copy-and-comment-lines)
+  (global-set-key (kbd "C-c p") 'evilnc-comment-or-uncomment-paragraphs)
+
+#+END_SRC
+* Lanugages
+** C/C++
+#+BEGIN_SRC emacs-lisp
+  (setq-default c-basic-offset 4
+                tab-width 4
+                indent-tabs-mode t)
+
+  (setq c-default-style "linux"
+        c-basic-offset 4)
+
+  ;; (add-hook 'c++-mode-hook 'irony-mode)
+  ;; (add-hook 'c-mode-hook 'irony-mode)
+  ;; (add-hook 'objc-mode-hook 'irony-mode)
+
+  ;; (defun my-irony-mode-hook ()
+  ;;   (define-key irony-mode-map [remap completion-at-point]
+  ;;     'irony-completion-at-point-async)
+  ;;   (define-key irony-mode-map [remap complete-symbol]
+  ;;     'irony-completion-at-point-async))
+  ;; (add-hook 'irony-mode-hook 'my-irony-mode-hook)
+  ;; (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+
+  ;; (eval-after-load 'flycheck
+  ;;   '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
+
+  ;; (eval-after-load 'company
+  ;;   '(add-to-list 'company-backends 'company-irony))
+
+  ;; (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
+#+END_SRC
+** Python
+#+BEGIN_SRC emacs-lisp
+  (setq-default py-shell-name "ipython")
+  (setq python-indent-guess-indent-offset nil)
+  (setq python-indent-offset 4)
+  (add-hook 'python-mode-hook 'anaconda-mode)
+  (add-hook 'python-mode-hook 'eldoc-mode)
+  (pyenv-mode)
+
+  (require 'virtualenvwrapper)
+  (venv-initialize-interactive-shells) ;; if you want interactive shell support
+  (setq venv-location "~/Development/Virtual_Environments/")
+#+END_SRC

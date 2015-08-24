@@ -169,6 +169,7 @@
  
 ** Keybindings
 #+BEGIN_SRC emacs-lisp +n
+
   (define-prefix-command 'my/exit)
   (global-set-key (kbd "s-q") nil)
   (global-set-key (kbd "s-q") 'my/exit)

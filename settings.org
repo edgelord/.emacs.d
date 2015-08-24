@@ -86,10 +86,13 @@
   (setq auto-save-file-name-transforms `((".*", my-auto-save-folder t))); location for all auto-save files
   (setq tramp-auto-save-directory my-auto-save-folder)
 #+END_SRC
-** COMMENT God Mode
+** God Mode
 #+BEGIN_SRC emacs-lisp +n
   (require 'god-mode)
-  (global-set-key (kbd "<escape>") 'god-mode-all)
+  (god-mode)
+
+  (add-to-list 'god-exempt-major-modes 'magit-mode)
+  (setq default-cursor-type 'bar)
   (defun my-update-cursor ()
     (setq cursor-type (if (or god-local-mode buffer-read-only)
                           'box
@@ -97,10 +100,9 @@
 
   (add-hook 'god-mode-enabled-hook 'my-update-cursor)
   (add-hook 'god-mode-disabled-hook 'my-update-cursor)
-  ;; (god-mode-all)
-  (god-mode)
-  (global-set-key (kbd "<escape>") 'god-mode-activate)
-  (define-key god-local-mode-map (kbd "i") 'god-mode-all)
+
+  (global-set-key (kbd "<escape>") 'god-local-mode)
+  (define-key god-local-mode-map (kbd "i") 'god-local-mode)
   (define-key god-local-mode-map (kbd ".") 'repeat)
   (define-key god-local-mode-map (kbd "V") 'set-rectangular-region-anchor)
 
@@ -182,8 +184,8 @@
   (global-set-key (kbd "s-(") '(lambda (&optional arg) (interactive "P") (sp-wrap-with-pair "(")))
   (global-set-key (kbd "s-{") '(lambda (&optional arg) (interactive "P") (sp-wrap-with-pair "{")))
   (global-set-key (kbd "s-[") '(lambda (&optional arg) (interactive "P") (sp-wrap-with-pair "[")))
-  (global-set-key (kbd "s-\"") '(lambda (&optional arg) (interactive "P") (sp-wrap-with-pair "\""))
-  (global-set-key (kbd "s-2") 'sp-splice-sexp))
+  (global-set-key (kbd "s-\"") '(lambda (&optional arg) (interactive "P") (sp-wrap-with-pair "\"")))
+  (global-set-key (kbd "s-2") 'sp-splice-sexp)
   (global-set-key (kbd "s-@") 'sp-splice-sexp-killing-around)
   (global-set-key (kbd "s-1") 'sp-splice-sexp-killing-backward)
   (global-set-key (kbd "s-3") 'sp-splice-sexp-killing-forward)
@@ -203,6 +205,7 @@
   (global-set-key (kbd "C-c l") 'evilnc-quick-comment-or-uncomment-to-the-line)
   (global-set-key (kbd "C-c c") 'evilnc-copy-and-comment-lines)
   (global-set-key (kbd "C-c p") 'evilnc-comment-or-uncomment-paragraphs)
+  (global-set-key (kbd "C-x C-m") 'helm-M-x)
 
 #+END_SRC
 * Lanugages
@@ -247,4 +250,51 @@
   (require 'virtualenvwrapper)
   (venv-initialize-interactive-shells) ;; if you want interactive shell support
   (setq venv-location "~/Development/Virtual_Environments/")
+#+END_SRC
+** Octave
+#+BEGIN_SRC emacs-lisp
+  ;; (autoload 'octave-mode "octave-mod" nil t)
+            (setq auto-mode-alist
+                  (cons '("\\.m$" . octave-mode) auto-mode-alist))
+
+  (add-hook 'octave-mode-hook
+                      (lambda ()
+                        (nlinum-mode)
+                        (abbrev-mode 1)
+                        (auto-fill-mode 1)
+                        (if (eq window-system 'x)
+                            (font-lock-mode 1))))
+
+#+END_SRC 
+
+* Custom Variables
+#+BEGIN_SRC emacs-lisp
+  (setq primary-modes
+            '("shell-mode"
+              "inferior-python-mode"
+              "inferior-octave-mode"))
+#+END_SRC
+* Custom Funcions
+#+BEGIN_SRC emacs-lisp
+  (defun configure ()
+    (interactive)
+    (find-file "~/.emacs.d/settings.org"))
+
+  (defun my-next-buffer (buff-func)
+    "next-buffer, only skip *Messages*"
+    (funcall buff-func)
+    (while (and (not (-contains? primary-modes (symbol-name major-mode)))
+                (= 42 (aref (buffer-name) 0)))
+      (funcall buff-func)))
+
+  (defun nxt ()
+    (interactive)
+    (my-next-buffer (function next-buffer)))
+
+  (defun prv ()
+    (interactive)
+    (my-next-buffer (function previous-buffer)))
+
+  (global-set-key [remap next-buffer] 'nxt)
+  (global-set-key [remap previous-buffer] 'prv)
 #+END_SRC

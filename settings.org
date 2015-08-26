@@ -28,6 +28,7 @@
           multiple-cursors
           evil-nerd-commenter
 
+          ace-jump-mode
           god-mode
 
           flycheck
@@ -65,7 +66,7 @@
 
   (load-theme 'zenburn t)
 
-  (powerline-default-theme)
+  ;; (powerline-default-theme)
   (smartparens-global-strict-mode)
   (rainbow-delimiters-mode)
   (bash-completion-setup)
@@ -167,48 +168,7 @@
   (add-hook 'helm-cleanup-hook (lambda () (popwin-mode 1)))
 #+END_SRC
  
-** Keybindings
-#+BEGIN_SRC emacs-lisp +n
 
-  (define-prefix-command 'my/exit)
-  (global-set-key (kbd "s-q") nil)
-  (global-set-key (kbd "s-q") 'my/exit)
-  (global-set-key (kbd "s-q s-q") 'kill-this-buffer)
-  (global-set-key (kbd "s-q s-r") 'exit-recursive-edit)
-  (global-set-key (kbd "s-i") 'sp-down-sexp)
-  (global-set-key (kbd "s-I") 'sp-backward-down-sexp)
-  (global-set-key (kbd "s-o") 'sp-up-sexp)
-  (global-set-key (kbd "s-O") 'sp-backward-up-sexp)
-  (global-set-key (kbd "s-d") 'sp-kill-sexp)
-  (global-set-key (kbd "s-f") 'sp-forward-sexp)
-  (global-set-key (kbd "s-b") 'sp-backward-sexp)
-  (global-set-key (kbd "s-(") '(lambda (&optional arg) (interactive "P") (sp-wrap-with-pair "(")))
-  (global-set-key (kbd "s-{") '(lambda (&optional arg) (interactive "P") (sp-wrap-with-pair "{")))
-  (global-set-key (kbd "s-[") '(lambda (&optional arg) (interactive "P") (sp-wrap-with-pair "[")))
-  (global-set-key (kbd "s-\"") '(lambda (&optional arg) (interactive "P") (sp-wrap-with-pair "\"")))
-  (global-set-key (kbd "s-2") 'sp-splice-sexp)
-  (global-set-key (kbd "s-@") 'sp-splice-sexp-killing-around)
-  (global-set-key (kbd "s-1") 'sp-splice-sexp-killing-backward)
-  (global-set-key (kbd "s-3") 'sp-splice-sexp-killing-forward)
-  (global-set-key (kbd "C-c C-k") 'copy-line)
-  (global-set-key (kbd "s-<") 'previous-buffer)
-  (global-set-key (kbd "s->") 'next-buffer)
-  (require 'comint)
-  (define-key comint-mode-map (kbd "<up>") 'comint-previous-input)
-  (define-key comint-mode-map (kbd "<down>") 'comint-next-input)
-  (global-set-key (kbd "C-c t") 'shell)
-  (global-set-key (kbd "C-(") 'sp-backward-slurp-sexp)
-  (global-set-key (kbd "C-)") 'sp-forward-slurp-sexp)
-  (global-set-key (kbd "C-{") 'sp-backward-barf-sexp)
-  (global-set-key (kbd "C-}") 'sp-backward-barf-sexp)
-  ;;; Nerd commenter
-  (global-set-key (kbd "M-;") 'evilnc-comment-or-uncomment-lines)
-  (global-set-key (kbd "C-c l") 'evilnc-quick-comment-or-uncomment-to-the-line)
-  (global-set-key (kbd "C-c c") 'evilnc-copy-and-comment-lines)
-  (global-set-key (kbd "C-c p") 'evilnc-comment-or-uncomment-paragraphs)
-  (global-set-key (kbd "C-x C-m") 'helm-M-x)
-  (global-set-key (kbd "C-c g") 'magit-status)
-#+END_SRC
 * Lanugages
 ** C/C++
 #+BEGIN_SRC emacs-lisp
@@ -298,4 +258,47 @@
 
   (global-set-key [remap next-buffer] 'nxt)
   (global-set-key [remap previous-buffer] 'prv)
+#+END_SRC
+* Keybindings
+#+BEGIN_SRC emacs-lisp +n
+  (define-prefix-command 'my/exit)
+  (global-set-key (kbd "s-q") nil)
+  (global-set-key (kbd "s-q") 'my/exit)
+  (global-set-key (kbd "s-q s-q") 'kill-this-buffer)
+  (global-set-key (kbd "s-q s-r") 'exit-recursive-edit)
+  (global-set-key (kbd "s-i") 'sp-down-sexp)
+  (global-set-key (kbd "s-I") 'sp-backward-down-sexp)
+  (global-set-key (kbd "s-o") 'sp-up-sexp)
+  (global-set-key (kbd "s-O") 'sp-backward-up-sexp)
+  (global-set-key (kbd "s-d") 'sp-kill-sexp)
+  (global-set-key (kbd "s-f") 'sp-forward-sexp)
+  (global-set-key (kbd "s-b") 'sp-backward-sexp)
+  (global-set-key (kbd "s-(") '(lambda (&optional arg) (interactive "P") (sp-wrap-with-pair "(")))
+  (global-set-key (kbd "s-{") '(lambda (&optional arg) (interactive "P") (sp-wrap-with-pair "{")))
+  (global-set-key (kbd "s-[") '(lambda (&optional arg) (interactive "P") (sp-wrap-with-pair "[")))
+  (global-set-key (kbd "s-\"") '(lambda (&optional arg) (interactive "P") (sp-wrap-with-pair "\"")))
+  (global-set-key (kbd "s-2") 'sp-splice-sexp)
+  (global-set-key (kbd "s-@") 'sp-splice-sexp-killing-around)
+  (global-set-key (kbd "s-1") 'sp-splice-sexp-killing-backward)
+  (global-set-key (kbd "s-3") 'sp-splice-sexp-killing-forward)
+  (global-set-key (kbd "C-c C-k") 'copy-line)
+  (global-set-key (kbd "s-<") 'previous-buffer)
+  (global-set-key (kbd "s->") 'next-buffer)
+  (global-set-key (kbd "s-j") 'ace-jump-mode)
+  (global-set-key (kbd "C-x j")  'ace-jump-mode)
+  (require 'comint)
+  (define-key comint-mode-map (kbd "<up>") 'comint-previous-input)
+  (define-key comint-mode-map (kbd "<down>") 'comint-next-input)
+  (global-set-key (kbd "C-c t") 'shell)
+  (global-set-key (kbd "C-(") 'sp-backward-slurp-sexp)
+  (global-set-key (kbd "C-)") 'sp-forward-slurp-sexp)
+  (global-set-key (kbd "C-{") 'sp-backward-barf-sexp)
+  (global-set-key (kbd "C-}") 'sp-backward-barf-sexp)
+  ;;; Nerd commenter
+  (global-set-key (kbd "M-;") 'evilnc-comment-or-uncomment-lines)
+  (global-set-key (kbd "C-c l") 'evilnc-quick-comment-or-uncomment-to-the-line)
+  (global-set-key (kbd "C-c c") 'evilnc-copy-and-comment-lines)
+  (global-set-key (kbd "C-c p") 'evilnc-comment-or-uncomment-paragraphs)
+  (global-set-key (kbd "C-x C-m") 'helm-M-x)
+  (global-set-key (kbd "C-c g") 'magit-status)
 #+END_SRC

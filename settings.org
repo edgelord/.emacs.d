@@ -234,12 +234,13 @@
 * Custom Variables
 #+BEGIN_SRC emacs-lisp
   (setq primary-modes
-            '("shell-mode"
-              "inferior-python-mode"
-              "inferior-octave-mode"
-              "magit-mode"))
+        '("shell-mode"
+          "inferior-python-mode"
+          "inferior-octave-mode"
+          "magit-mode"
+          "magit-status-mode"))
 #+END_SRC
-* COMMENT Custom Funcions
+* Custom Funcions
 #+BEGIN_SRC emacs-lisp
   (defun configure ()
     (interactive)
@@ -264,11 +265,16 @@
   (global-set-key [remap previous-buffer] 'prv)
 
   (defun my/kill-buffer ()
-    (lambda ()
-      ((kill-this-buffer)
-       (nxt))))
+    (interactive)
+    (when (not (equal "agenda.org" (buffer-name)))
+      (kill-this-buffer))
+    (nxt))
 
   (global-set-key [remap kill-this-buffer] 'my/kill-buffer)
+
+  (defun current-mode ()
+    (interactive)
+    (message (symbol-name major-mode)))
 
 #+END_SRC
 * Keybindings

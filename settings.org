@@ -264,8 +264,9 @@
   (global-set-key [remap previous-buffer] 'prv)
 
   (defun my/kill-buffer ()
-      (kill-this-buffer)
-      (nxt))
+    (lambda ()
+      ((kill-this-buffer)
+       (nxt))))
 
   (global-set-key [remap kill-this-buffer] 'my/kill-buffer)
 

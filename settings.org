@@ -67,7 +67,7 @@
   (load-theme 'zenburn t)
 
   ;; (powerline-default-theme)
-  (smartparens-global-strict-mode)
+  (smartparens-global-mode)
   (rainbow-delimiters-mode)
   (bash-completion-setup)
 
@@ -79,6 +79,7 @@
   (setq inhibit-startup-message t) 
   (setq initial-buffer-choice "~/Development/agenda.org")
   (setq initial-scratch-message nil)
+  (setq default-cursor-type 'bar)
 #+END_SRC
 ** Autosave
 #+BEGIN_SRC emacs-lisp +n
@@ -88,7 +89,7 @@
   (setq tramp-auto-save-directory my-auto-save-folder)
 #+END_SRC
 ** God Mode
-#+BEGIN_SRC emacs-lisp +n
+#+BEGIN_SRC NOT_LOADING +n
   (require 'god-mode)
   (god-mode)
 
@@ -168,7 +169,6 @@
   (add-hook 'helm-cleanup-hook (lambda () (popwin-mode 1)))
 #+END_SRC
  
-
 * Lanugages
 ** C/C++
 #+BEGIN_SRC emacs-lisp
@@ -211,6 +211,9 @@
   (require 'virtualenvwrapper)
   (venv-initialize-interactive-shells) ;; if you want interactive shell support
   (setq venv-location "~/Development/Virtual_Environments/")
+  (org-babel-do-load-languages
+    'org-babel-load-languages
+    '((python . t)))
 #+END_SRC
 ** Octave
 #+BEGIN_SRC emacs-lisp
@@ -284,8 +287,7 @@
   (global-set-key (kbd "C-c C-k") 'copy-line)
   (global-set-key (kbd "s-<") 'previous-buffer)
   (global-set-key (kbd "s->") 'next-buffer)
-  (global-set-key (kbd "s-j") 'ace-jump-mode)
-  (global-set-key (kbd "C-x j")  'ace-jump-mode)
+  (global-set-key (kbd "C-;")  'ace-jump-mode)
   (require 'comint)
   (define-key comint-mode-map (kbd "<up>") 'comint-previous-input)
   (define-key comint-mode-map (kbd "<down>") 'comint-next-input)
@@ -301,4 +303,7 @@
   (global-set-key (kbd "C-c p") 'evilnc-comment-or-uncomment-paragraphs)
   (global-set-key (kbd "C-x C-m") 'helm-M-x)
   (global-set-key (kbd "C-c g") 'magit-status)
+
+  (define-key company-active-map (kbd "C-n") 'company-select-next)
+  (define-key company-active-map (kbd "C-p") 'company-select-previous)
 #+END_SRC

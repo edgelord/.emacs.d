@@ -239,7 +239,7 @@
               "inferior-octave-mode"
               "magit-mode"))
 #+END_SRC
-* Custom Funcions
+* COMMENT Custom Funcions
 #+BEGIN_SRC emacs-lisp
   (defun configure ()
     (interactive)

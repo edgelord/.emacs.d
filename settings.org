@@ -236,7 +236,8 @@
   (setq primary-modes
             '("shell-mode"
               "inferior-python-mode"
-              "inferior-octave-mode"))
+              "inferior-octave-mode"
+              "magit-mode"))
 #+END_SRC
 * Custom Funcions
 #+BEGIN_SRC emacs-lisp
@@ -261,6 +262,13 @@
 
   (global-set-key [remap next-buffer] 'nxt)
   (global-set-key [remap previous-buffer] 'prv)
+
+  (defun my/kill-buffer ()
+      (kill-this-buffer)
+      (nxt))
+
+  (global-set-key [remap kill-this-buffer] 'my/kill-buffer)
+
 #+END_SRC
 * Keybindings
 #+BEGIN_SRC emacs-lisp +n

@@ -276,6 +276,15 @@
     (interactive)
     (message (symbol-name major-mode)))
 
+
+  (defun 241vm ()
+    (interactive)
+    (find-file "/ssh:akmishr2@remlnx.ews.illinois.edu:/home/akmishr2"))
+
+  (defun ews ()
+    (interactive)
+    (find-file "/ssh:akmishr2@fa15-cs241-136.cs.illinois.edu:/")  )
+
 #+END_SRC
 * Keybindings
 #+BEGIN_SRC emacs-lisp +n

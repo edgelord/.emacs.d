@@ -231,6 +231,12 @@
 
 #+END_SRC 
 
+** LaTeX
+#+BEGIN_SRC emacs-lisp
+  (setq-default TeX-master nil)
+  (setq TeX-parse-self t)
+  (setq TeX-auto-save t)
+#+END_SRC
 * Custom Variables
 #+BEGIN_SRC emacs-lisp
   (setq primary-modes

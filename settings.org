@@ -274,7 +274,7 @@
     (interactive)
     (when (not (equal "agenda.org" (buffer-name)))
       (kill-this-buffer))
-    (nxt))
+    (prv))
 
   (global-set-key [remap kill-this-buffer] 'my/kill-buffer)
 
@@ -289,11 +289,16 @@
 
   (defun ews ()
     (interactive)
-    (find-file "/ssh:akmishr2@fa15-cs241-136.cs.illinois.edu:/")  )
+    (find-file "/ssh:akmishr2@fa15-cs241-136.cs.illinois.edu:/"))
+
+  (defun revert-buffer-no-confirm ()
+    "Revert buffer without confirmation."
+    (interactive) (revert-buffer t t))
 
 #+END_SRC
 * Keybindings
 #+BEGIN_SRC emacs-lisp +n
+  (global-set-key (kbd "<f5>") 'revert-buffer-no-confirm)
   (define-prefix-command 'my/exit)
   (global-set-key (kbd "s-q") nil)
   (global-set-key (kbd "s-q") 'my/exit)
@@ -336,4 +341,5 @@
 
   (define-key company-active-map (kbd "C-n") 'company-select-next)
   (define-key company-active-map (kbd "C-p") 'company-select-previous)
+
 #+END_SRC

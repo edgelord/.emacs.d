@@ -120,7 +120,7 @@
   (require 'popwin)
   (popwin-mode 1)
 #+END_SRC
-** Linum Mode
+** Linum Modes
 #+BEGIN_SRC emacs-lisp +n
   (setq nlinum-format " %d ")
 
@@ -169,6 +169,17 @@
   (add-hook 'helm-cleanup-hook (lambda () (popwin-mode 1)))
 #+END_SRC
  
+** Yasnippet
+#+BEGIN_SRC emacs-lisp
+  (setq yas-snippet-dirs
+        '("~/.emacs.d/snippets"                 ;; personal snippets
+          "/path/to/some/collection/"           ;; foo-mode and bar-mode snippet collection
+          "/path/to/yasnippet/yasmate/snippets" ;; the yasmate collection
+          "/path/to/yasnippet/snippets"         ;; the default collection
+          ))
+
+  (yas-global-mode 1) ;; 
+#+END_SRC
 * Lanugages
 ** C/C++
 #+BEGIN_SRC emacs-lisp
@@ -295,10 +306,19 @@
     "Revert buffer without confirmation."
     (interactive) (revert-buffer t t))
 
+  (defun smart-line-beginning ()
+    "Move point to the beginning of text on the current line; if that is already
+  the current position of point, then move it to the beginning of the line."
+    (interactive)
+    (let ((pt (point)))
+      (beginning-of-line-text)
+      (when (eq pt (point))
+        (beginning-of-line))))
 #+END_SRC
 * Keybindings
 #+BEGIN_SRC emacs-lisp +n
   (global-set-key (kbd "<f5>") 'revert-buffer-no-confirm)
+  (global-set-key (kbd "C-a") 'smart-line-beginning)
   (define-prefix-command 'my/exit)
   (global-set-key (kbd "s-q") nil)
   (global-set-key (kbd "s-q") 'my/exit)

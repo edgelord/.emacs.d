@@ -60,6 +60,7 @@
 ** UI
 #+BEGIN_SRC emacs-lisp +n
   (require 'smartparens-config)
+  
   (require 'rainbow-delimiters)
   (require 'bash-completion)
   (require 'powerline)
@@ -67,7 +68,7 @@
   (load-theme 'zenburn t)
 
   ;; (powerline-default-theme)
-  (smartparens-global-mode)
+  (add-hook 'prog-mode-hook (rainbow-delimiters-mode))
   (rainbow-delimiters-mode)
   (bash-completion-setup)
 
@@ -189,7 +190,15 @@
 
   (setq c-default-style "linux"
         c-basic-offset 4)
+  (defun my-open-block-c-mode (id action context)
+    (when (eq action 'insert)
+      (newline)
+      (newline)
+      (indent-according-to-mode)
+      (previous-line)
+      (indent-according-to-mode)))
 
+  (sp-local-pair 'c-mode "{" nil :post-handlers '(:add my-open-block-c-mode))
   ;; (add-hook 'c++-mode-hook 'irony-mode)
   ;; (add-hook 'c-mode-hook 'irony-mode)
   ;; (add-hook 'objc-mode-hook 'irony-mode)
@@ -306,14 +315,45 @@
     "Revert buffer without confirmation."
     (interactive) (revert-buffer t t))
 
+  (defun smart-kill-line ()
+    "Kills line and fixes indentation"
+    (interactive)
+    (kill-line)
+    (indent-according-to-mode))
+
+  (defun smart-kill-whole-line ()
+    (interactive)
+    (kill-whole-line)
+    (beginning-of-line-text))
+
+  (global-set-key (kbd "C-k") 'smart-kill-line)
+  (global-set-key (kbd "C-S-k") 'smart-kill-whole-line)
+
   (defun smart-line-beginning ()
     "Move point to the beginning of text on the current line; if that is already
-  the current position of point, then move it to the beginning of the line."
+    the current position of point, then move it to the beginning of the line."
     (interactive)
     (let ((pt (point)))
       (beginning-of-line-text)
       (when (eq pt (point))
         (beginning-of-line))))
+
+  (defun smart-open-line ()
+    "Insert an empty line after the current line.
+     Position the cursor at its beginning, according to the current mode."
+    (interactive)
+    (move-end-of-line nil)
+    (newline-and-indent))
+
+
+  (defun smart-open-line-above ()
+    "Insert an empty line above the current line.
+    Position the cursor at it's beginning, according to the current mode."
+    (interactive)
+    (move-beginning-of-line nil)
+    (newline-and-indent)
+    (forward-line -1)
+    (indent-according-to-mode))
 #+END_SRC
 * Keybindings
 #+BEGIN_SRC emacs-lisp +n
@@ -362,4 +402,6 @@
   (define-key company-active-map (kbd "C-n") 'company-select-next)
   (define-key company-active-map (kbd "C-p") 'company-select-previous)
 
+  (global-set-key (kbd "C-o") 'smart-open-line-above)
+  (global-set-key [(shift return)] 'smart-open-line)
 #+END_SRC

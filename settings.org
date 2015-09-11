@@ -60,7 +60,7 @@
 ** UI
 #+BEGIN_SRC emacs-lisp +n
   (require 'smartparens-config)
-  
+
   (require 'rainbow-delimiters)
   (require 'bash-completion)
   (require 'powerline)
@@ -68,7 +68,9 @@
   (load-theme 'zenburn t)
 
   ;; (powerline-default-theme)
-  (add-hook 'prog-mode-hook (rainbow-delimiters-mode))
+  (add-hook 'prog-mode-hook (lambda ()
+                              (rainbow-delimiters-mode)
+                              (nlinum-mode))
   (rainbow-delimiters-mode)
   (bash-completion-setup)
 
@@ -303,11 +305,11 @@
     (message (symbol-name major-mode)))
 
 
-  (defun 241vm ()
+  (defun ews ()
     (interactive)
     (find-file "/ssh:akmishr2@remlnx.ews.illinois.edu:/home/akmishr2"))
 
-  (defun ews ()
+  (defun 241vm ()
     (interactive)
     (find-file "/ssh:akmishr2@fa15-cs241-136.cs.illinois.edu:/"))
 

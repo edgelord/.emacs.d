@@ -184,7 +184,7 @@
   (yas-global-mode 1) ;; 
 #+END_SRC
 * Lanugages
-** C/C++
+** COMMENT C/C++
 #+BEGIN_SRC emacs-lisp
   (setq-default c-basic-offset 4
                 tab-width 4
@@ -200,6 +200,7 @@
       (previous-line)
       (indent-according-to-mode)))
 
+  (add-hook 'c-mode-common-hook (lambda () (nlinum-mode)))
   (sp-local-pair 'c-mode "{" nil :post-handlers '(:add my-open-block-c-mode))
   ;; (add-hook 'c++-mode-hook 'irony-mode)
   ;; (add-hook 'c-mode-hook 'irony-mode)

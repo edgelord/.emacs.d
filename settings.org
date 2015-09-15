@@ -184,7 +184,7 @@
   (yas-global-mode 1) ;; 
 #+END_SRC
 * Lanugages
-** COMMENT C/C++
+** C/C++
 #+BEGIN_SRC emacs-lisp
   (setq-default c-basic-offset 4
                 tab-width 4
@@ -411,3 +411,77 @@
   (global-set-key (kbd "C-o") 'smart-open-line-above)
   (global-set-key [(shift return)] 'smart-open-line)
 #+END_SRC
+* Org settings
+#+BEGIN_SRC emacs-lisp +n
+  (add-to-list 'org-latex-classes
+               '("374"
+                "
+  \\documentclass[11pt]{article}
+  \\usepackage{jeffe,handout,graphicx}
+  \\usepackage[utf8]{inputenc}    
+
+  \\def\\Sym#1{\\textbf{\\texttt{\\color{BrickRed}#1}}}
+  \\renewcommand{\\qed}{\\rule{1ex}{1ex}}
+  \\usepackage{pifont}
+
+  \\def\\Spade{\\text{\\ding{171}}}
+  \\def\\Heart{\\text{\\textcolor{Red}{\\ding{170}}}}
+  \\def\\Diamond{\\text{\\textcolor{Red}{\\ding{169}}}}
+  \\def\\Club{\\text{\\ding{168}}}
+
+  \\Class{CS 374}
+  \\Semester{Fall 2015}
+  \\Authors{3}
+  \\AuthorOne{Akshay Mishra}{akmishr2}
+  \\AuthorTwo{Sachin Ravichandran}{sravich2}
+  \\AuthorThree{Kevin Lin}{kklin4}
+              [NO-DEFAULT-PACKAGES]
+              [NO-PACKAGES]"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+  (add-to-list 'org-latex-classes
+               '("446"
+                "
+  \\input{cs446.tex}
+  \\usepackage{hyperref}
+  \\usepackage[ruled,vlined]{algorithm2e}
+  \\oddsidemargin 0in
+  \\evensidemargin 0in
+  \\textwidth 6.5in
+  \\topmargin -0.5in
+  \\textheight 9.0in
+  \\pagestyle{myheadings}  % Leave this command alone
+              [NO-DEFAULT-PACKAGES]
+              [EXTRA]"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+  (setq org-export-with-section-numbers nil)
+  (setq org-export-with-toc nil)
+  (setq org-latex-hyperref-template "")
+  (setq org-latex-with-hyperref nil)
+  (add-hook 'doc-view-mode-hook 'auto-revert-mode)
+  (add-hook '')
+  (require 'org)
+  (defun org-body-pdf ()
+    (interactive)
+    (org-latex-export-to-pdf (nil nil nil nil t)))
+
+
+  (setq org-export-with-author nil)
+  (setq org-list-allow-alphabetical t)
+  
+
+
+#+END_SRC
+
+
+#+END_SRC
+

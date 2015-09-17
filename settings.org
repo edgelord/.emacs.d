@@ -70,8 +70,7 @@
   ;; (powerline-default-theme)
   (add-hook 'prog-mode-hook (lambda ()
                               (rainbow-delimiters-mode)
-                              (nlinum-mode))
-  (rainbow-delimiters-mode)
+                              (nlinum-mode)))
   (bash-completion-setup)
 
   (global-company-mode)
@@ -413,6 +412,7 @@
 #+END_SRC
 * Org settings
 #+BEGIN_SRC emacs-lisp +n
+  (require 'ox-latex)
   (add-to-list 'org-latex-classes
                '("374"
                 "
@@ -448,7 +448,8 @@
                 "
   \\input{cs446.tex}
   \\usepackage{hyperref}
-  \\usepackage[ruled,vlined]{algorithm2e}
+  \\usepackage[lined,boxed]{algorithm2e}
+  \\usepackage{graphicx}
   \\oddsidemargin 0in
   \\evensidemargin 0in
   \\textwidth 6.5in
@@ -461,14 +462,13 @@
                  ("\\subsection{%s}" . "\\subsection*{%s}")
                  ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                  ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))),
 
   (setq org-export-with-section-numbers nil)
   (setq org-export-with-toc nil)
   (setq org-latex-hyperref-template "")
   (setq org-latex-with-hyperref nil)
   (add-hook 'doc-view-mode-hook 'auto-revert-mode)
-  (add-hook '')
   (require 'org)
   (defun org-body-pdf ()
     (interactive)
@@ -477,7 +477,7 @@
 
   (setq org-export-with-author nil)
   (setq org-list-allow-alphabetical t)
-  
+
 
 
 #+END_SRC

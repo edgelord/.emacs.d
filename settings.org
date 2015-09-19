@@ -186,6 +186,12 @@
   (yas-global-mode 1) ;; 
 #+END_SRC
 * Lanugages
+** Haskell
+# (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+(add-hook 'haskell-indent-simple 'turn-on-haskell-simple-indent)
+(add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
+
+  
 ** C/C++
 #+BEGIN_SRC emacs-lisp
   (setq-default c-basic-offset 4

@@ -187,11 +187,13 @@
 #+END_SRC
 * Lanugages
 ** Haskell
+#+BEGIN_SRC emacs-lisp
 # (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
 (add-hook 'haskell-indent-simple 'turn-on-haskell-simple-indent)
+(add-hook 'haskell-mode-hook 'turn-on-hi2)
 (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
+#+END_SRC
 
-  
 ** C/C++
 #+BEGIN_SRC emacs-lisp
   (setq-default c-basic-offset 4

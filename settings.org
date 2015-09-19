@@ -40,6 +40,9 @@
           
           zenburn-theme
           powerline
+
+
+          haskell-mode
           
           ein
           anaconda-mode

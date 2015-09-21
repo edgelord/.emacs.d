@@ -188,7 +188,7 @@
 * Lanugages
 ** Haskell
 #+BEGIN_SRC emacs-lisp
-# (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+(add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
 (add-hook 'haskell-indent-simple 'turn-on-haskell-simple-indent)
 (add-hook 'haskell-mode-hook 'turn-on-hi2)
 (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
@@ -210,27 +210,27 @@
       (previous-line)
       (indent-according-to-mode)))
 
-  (add-hook 'c-mode-common-hook (lambda () (nlinum-mode)))
-  (sp-local-pair 'c-mode "{" nil :post-handlers '(:add my-open-block-c-mode))
-  (add-hook 'c++-mode-hook 'irony-mode)
-  (add-hook 'c-mode-hook 'irony-mode)
-  (add-hook 'objc-mode-hook 'irony-mode)
+  ;; (add-hook 'c-mode-common-hook (lambda () (nlinum-mode)))
+  ;; (sp-local-pair 'c-mode "{" nil :post-handlers '(:add my-open-block-c-mode))
+  ;; (add-hook 'c++-mode-hook 'irony-mode)
+  ;; (add-hook 'c-mode-hook 'irony-mode)
+  ;; (add-hook 'objc-mode-hook 'irony-mode)
 
-  (defun my-irony-mode-hook ()
-    (define-key irony-mode-map [remap completion-at-point]
-      'irony-completion-at-point-async)
-    (define-key irony-mode-map [remap complete-symbol]
-      'irony-completion-at-point-async))
-  (add-hook 'irony-mode-hook 'my-irony-mode-hook)
-  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+  ;; (defun my-irony-mode-hook ()
+  ;;   (define-key irony-mode-map [remap completion-at-point]
+  ;;     'irony-completion-at-point-async)
+  ;;   (define-key irony-mode-map [remap complete-symbol]
+  ;;     'irony-completion-at-point-async))
+  ;; (add-hook 'irony-mode-hook 'my-irony-mode-hook)
+  ;; (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
 
-  (eval-after-load 'flycheck
-    '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
+  ;; (eval-after-load 'flycheck
+  ;;   '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
 
-  (eval-after-load 'company
-    '(add-to-list 'company-backends 'company-irony))
+  ;; (eval-after-load 'company
+  ;;   '(add-to-list 'company-backends 'company-irony))
 
-  (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
+  ;; (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
 #+END_SRC
 ** Python
 #+BEGIN_SRC emacs-lisp
@@ -240,7 +240,17 @@
   (add-hook 'python-mode-hook 'anaconda-mode)
   (add-hook 'python-mode-hook 'eldoc-mode)
   (pyenv-mode)
+  (defun my/run-python ()
+    (interactive)
+    (run-python "ipython"))
 
+  (defun my/python-shell ()
+    (interactive)
+    (my/run-python)
+    (python-shell-switch-to-shell))
+
+  (define-key python-mode-map (kbd "C-c C-z") 'my/python-shell)
+  (global-set-key [remap run-python] 'my/run-python)
   (require 'virtualenvwrapper)
   (venv-initialize-interactive-shells) ;; if you want interactive shell support
   (setq venv-location "~/Development/Virtual_Environments/")
@@ -281,6 +291,7 @@
 #+END_SRC
 * Custom Funcions
 #+BEGIN_SRC emacs-lisp
+  
   (defun configure ()
     (interactive)
     (find-file "~/.emacs.d/settings.org"))
@@ -314,7 +325,6 @@
   (defun current-mode ()
     (interactive)
     (message (symbol-name major-mode)))
-
 
   (defun ews ()
     (interactive)

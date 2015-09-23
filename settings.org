@@ -440,7 +440,8 @@
   \\documentclass[11pt]{article}
   \\usepackage{jeffe,handout,graphicx}
   \\usepackage[utf8]{inputenc}    
-
+  \\usepackage{sectsty}
+  \\sectionfont{\\fontsize{12}{15}\\selectfont}
   \\def\\Sym#1{\\textbf{\\texttt{\\color{BrickRed}#1}}}
   \\renewcommand{\\qed}{\\rule{1ex}{1ex}}
   \\usepackage{pifont}
@@ -468,6 +469,8 @@
                '("446"
                 "
   \\input{cs446.tex}
+  \\usepackage{sectsty}
+  \\sectionfont{\\fontsize{12}{15}\\selectfont}
   \\usepackage{hyperref}
   \\usepackage[lined,boxed]{algorithm2e}
   \\usepackage{graphicx}
@@ -483,7 +486,7 @@
                  ("\\subsection{%s}" . "\\subsection*{%s}")
                  ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                  ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))),
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
   (setq org-export-with-section-numbers nil)
   (setq org-export-with-toc nil)

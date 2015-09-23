@@ -79,7 +79,7 @@
   (global-company-mode)
   (global-flycheck-mode)
   (global-hl-line-mode 1)
-
+  (smartparens-global-mode)
   (setq ring-bell-function 'ignore)
   (setq inhibit-startup-message t) 
   (setq initial-buffer-choice "~/Development/agenda.org")

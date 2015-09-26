@@ -209,7 +209,7 @@
       (indent-according-to-mode)
       (previous-line)
       (indent-according-to-mode)))
-
+  (add-hook 'c++-mode-hook (lambda () (setq flycheck-clang-language-standard "c++11")))
   ;; (add-hook 'c-mode-common-hook (lambda () (nlinum-mode)))
   ;; (sp-local-pair 'c-mode "{" nil :post-handlers '(:add my-open-block-c-mode))
   ;; (add-hook 'c++-mode-hook 'irony-mode)
@@ -442,6 +442,7 @@
   \\usepackage[utf8]{inputenc}    
   \\usepackage{sectsty}
   \\sectionfont{\\fontsize{12}{15}\\selectfont}
+  \\subsectionfont{\\fontsize{12}{12}\\selectfont}
   \\def\\Sym#1{\\textbf{\\texttt{\\color{BrickRed}#1}}}
   \\renewcommand{\\qed}{\\rule{1ex}{1ex}}
   \\usepackage{pifont}
@@ -470,7 +471,8 @@
                 "
   \\input{cs446.tex}
   \\usepackage{sectsty}
-  \\sectionfont{\\fontsize{12}{15}\\selectfont}
+  \\sectionfont{\\fontsize{12}{12}\\selectfont}
+  \\subsectionfont{\\fontsize{12}{12}\\selectfont}
   \\usepackage{hyperref}
   \\usepackage[lined,boxed]{algorithm2e}
   \\usepackage{graphicx}

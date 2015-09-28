@@ -318,7 +318,7 @@
     (interactive)
     (when (not (equal "agenda.org" (buffer-name)))
       (kill-this-buffer))
-    (prv))
+    (nxt))
 
   (global-set-key [remap kill-this-buffer] 'my/kill-buffer)
 
@@ -381,7 +381,8 @@
 * Keybindings
 #+BEGIN_SRC emacs-lisp +n
   ;; Keybindings
-
+  (global-set-key (kbd "s-n") 'flycheck-next-error)
+  (global-set-key (kbd "s-p") 'flycheck-previous-error)
   (global-set-key (kbd "ESC ESC") (lambda () (interactive) (message "Cancel")))
   (global-set-key (kbd "<f5>") 'revert-buffer-no-confirm)
   (global-set-key (kbd "C-a") 'smart-line-beginning)

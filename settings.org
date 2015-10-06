@@ -443,9 +443,10 @@
                 "
   \\documentclass[11pt]{article}
   \\usepackage{jeffe,handout,graphicx}
+
   \\usepackage[utf8]{inputenc}    
   \\usepackage{sectsty}
-  \\sectionfont{\\fontsize{12}{15}\\selectfont}
+  \\sectionfont{\\fontsize{12}{12}\\selectfont}
   \\subsectionfont{\\fontsize{12}{12}\\selectfont}
   \\def\\Sym#1{\\textbf{\\texttt{\\color{BrickRed}#1}}}
   \\renewcommand{\\qed}{\\rule{1ex}{1ex}}

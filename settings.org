@@ -111,7 +111,7 @@
   (global-set-key (kbd "<escape>") 'god-local-mode)
   (define-key god-local-mode-map (kbd "i") 'god-local-mode)
   (define-key god-local-mode-map (kbd ".") 'repeat)
-  (define-key god-local-mode-map (kbd "V") 'set-rectangular-region-anchor)
+
 
 
   (global-set-key (kbd "C-x C-1") 'delete-other-windows)
@@ -137,12 +137,14 @@
 #+END_SRC
 ** Multiple Cursors
 #+BEGIN_SRC emacs-lisp +n
-(require 'multiple-cursors)
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "s-,") 'mc/skip-previous-like-this)
-(global-set-key (kbd "s-.") 'mc/skip-previous-like-this)
-(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+  (require 'multiple-cursors)
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "s-,") 'mc/skip-previous-like-this)
+  (global-set-key (kbd "s-.") 'mc/skip-previous-like-this)
+  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+  (global-set-key (kbd "s-/") 'set-rectangular-region-anchor)
+
 #+END_SRC
 ** Helm
 #+BEGIN_SRC emacs-lisp +n
@@ -506,7 +508,7 @@
     (org-latex-export-to-pdf (nil nil nil nil t)))
 
 
-  (setq org-export-with-author nil)
+  (setq org-export-with-author t)
   (setq org-list-allow-alphabetical t)
 
 
@@ -514,5 +516,5 @@
 #+END_SRC
 
 
-#+END_SRC
+
 

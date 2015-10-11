@@ -179,7 +179,8 @@
 #+END_SRC
  
 ** Yasnippet
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp-comment
+  (require 'yasnippet)
   (setq yas-snippet-dirs
         '("~/.emacs.d/snippets"                 ;; personal snippets
           "/path/to/some/collection/"           ;; foo-mode and bar-mode snippet collection
@@ -216,10 +217,8 @@
   (add-hook 'c++-mode-hook (lambda () (setq flycheck-clang-language-standard "c++11")))
 
 
-  (add-hook 'c-mode-common-hook
-            (lambda ()
-              (define-key c-mode-base-map (kbd "C-o") 'smart-open-line-above)
-              (define-key [(shift return)] 'smart-open-line))
+  (global-set-key (kbd "C-o") 'smart-open-line-above)
+  (global-set-key [(control return)]'smart-open-line)
 
 
   ;; (add-hook 'c-mode-common-hook (lambda () (nlinum-mode)))
@@ -303,10 +302,14 @@
 #+END_SRC
 * Custom Funcions
 #+BEGIN_SRC emacs-lisp
-  
+
   (defun configure ()
     (interactive)
     (find-file "~/.emacs.d/settings.org"))
+
+  (defun reload-config ()
+    (interactive)
+    (org-babel-load-file "~/.emacs.d/settings.org"))
 
   (defun my-next-buffer (buff-func)
     "next-buffer, only skip *Messages*"
@@ -380,7 +383,6 @@
     (move-end-of-line nil)
     (newline-and-indent))
 
-
   (defun smart-open-line-above ()
     "Insert an empty line above the current line.
     Position the cursor at it's beginning, according to the current mode."
@@ -389,6 +391,45 @@
     (newline-and-indent)
     (forward-line -1)
     (indent-according-to-mode))
+
+  (defun py-open-line ()
+    "Insert an empty line after the current line.
+     Position the cursor at its beginning, according to the current mode."
+    (interactive)
+    (move-end-of-line nil)
+    (newline-and-indent))
+
+  (defun py-open-line-above ()
+    "Insert an empty line above the current line.
+    Position the cursor at it's beginning, according to the current mode."
+    (interactive)
+    (move-beginning-of-line nil)
+    (newline-and-indent)
+    (forward-line -1)
+    (indent-according-to-mode))
+
+  (dolist (command '(yank yank-pop))
+     (eval `(defadvice ,command (after indent-region activate)
+              (and (not current-prefix-arg)
+                   (member major-mode '(emacs-lisp-mode lisp-mode
+                                                        clojure-mode    scheme-mode
+                                                        haskell-mode    ruby-mode
+                                                        rspec-mode      python-mode
+                                                        c-mode          c++-mode
+                                                        objc-mode       latex-mode
+                                                        plain-tex-mode))
+                   (let ((mark-even-if-inactive transient-mark-mode))
+                     (indent-region (region-beginning) (region-end) nil))))))
+
+  (defun visit-term-buffer ()
+    "Create or visit a terminal buffer."
+    (interactive)
+    (if (not (get-buffer "*ansi-term*"))
+        (progn
+          (split-window-sensibly (selected-window))
+          (other-window 1)
+          (shell))
+      (switch-to-buffer-other-window "*shell*")))
 #+END_SRC
 * Keybindings
 #+BEGIN_SRC emacs-lisp +n
@@ -431,7 +472,7 @@
   (require 'comint)
   (define-key comint-mode-map (kbd "<up>") 'comint-previous-input)
   (define-key comint-mode-map (kbd "<down>") 'comint-next-input)
-  (global-set-key (kbd "C-c t") 'shell)
+  (global-set-key (kbd "C-c t") 'visit-term-buffer)
   (global-set-key (kbd "C-(") 'sp-backward-slurp-sexp)
   (global-set-key (kbd "C-)") 'sp-forward-slurp-sexp)
   (global-set-key (kbd "C-{") 'sp-backward-barf-sexp)

@@ -424,7 +424,7 @@
   (defun visit-term-buffer ()
     "Create or visit a terminal buffer."
     (interactive)
-    (if (not (get-buffer "*ansi-term*"))
+    (if (not (get-buffer "*shell*"))
         (progn
           (split-window-sensibly (selected-window))
           (other-window 1)

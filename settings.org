@@ -1,4 +1,4 @@
-* Packages
+* Package Installations
 ** Setup Package Manager
 #+BEGIN_SRC emacs-lisp +n 
   (require 'package)
@@ -59,7 +59,7 @@
   (when (memq window-system '(mac ns))
     (exec-path-from-shell-initialize))
 #+END_SRC
-* General Settings
+* Packages Settings
 ** UI
 #+BEGIN_SRC emacs-lisp +n
   (require 'smartparens-config)
@@ -124,6 +124,7 @@
 #+BEGIN_SRC emacs-lisp +n
   (require 'popwin)
   (popwin-mode 1)
+  (push '("*anaconda-doc*" :width 100 :height 50 :position left) popwin:special-display-config)
 #+END_SRC
 ** Linum Modes
 #+BEGIN_SRC emacs-lisp +n
@@ -302,7 +303,8 @@
 #+END_SRC
 * Custom Funcions
 #+BEGIN_SRC emacs-lisp
-
+(setq longlines-wrap-follows-window-size t)
+(global-set-key [(control meta l)] 'longlines-mode)
   (defun configure ()
     (interactive)
     (find-file "~/.emacs.d/settings.org"))
@@ -492,131 +494,187 @@
 #+END_SRC
 * Org settings
 #+BEGIN_SRC emacs-lisp +n
-  (require 'ox-latex)
+    (require 'ox-latex)
 (add-to-list 'org-latex-classes
-               '("panic"
-                "
-  \\documentclass[11pt]{article}
-  \\usepackage{jeffe,handout,graphicx}
+                 '("paper"
+                  "
+    \\documentclass[11pt,a4paper,twocolumn]{article}
+    \\usepackage[utf8]{inputenc}    
+    \\usepackage{sectsty}
+    \\usepackage{graphicx}
+    \\sectionfont{\\fontsize{14}{13}\\selectfont}
+    \\subsectionfont{\\fontsize{12}{12}\\selectfont}
+    \\def\\Sym#1{\\textbf{\\texttt{\\color{BrickRed}#1}}}
+    \\usepackage{pifont}
 
-  \\usepackage[utf8]{inputenc}    
-  \\usepackage{sectsty}
-  \\sectionfont{\\fontsize{14}{13}\\selectfont}
-  \\subsectionfont{\\fontsize{12}{12}\\selectfont}
-  \\def\\Sym#1{\\textbf{\\texttt{\\color{BrickRed}#1}}}
-  \\renewcommand{\\qed}{\\rule{1ex}{1ex}}
-  \\usepackage{pifont}
+    \\def\\Spade{\\text{\\ding{171}}}
+    \\def\\Heart{\\text{\\textcolor{Red}{\\ding{170}}}}
+    \\def\\Diamond{\\text{\\textcolor{Red}{\\ding{169}}}}
+    \\def\\Club{\\text{\\ding{168}}}
+                [NO-DEFAULT-PACKAGES]
+                [NO-PACKAGES]"
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
-  \\def\\Spade{\\text{\\ding{171}}}
-  \\def\\Heart{\\text{\\textcolor{Red}{\\ding{170}}}}
-  \\def\\Diamond{\\text{\\textcolor{Red}{\\ding{169}}}}
-  \\def\\Club{\\text{\\ding{168}}}
-
-  \\Class{CS 446}
-  \\Semester{Fall 2015}
-  \\Authors{1}
-  \\AuthorOne{Akshay Mishra}{akmishr2}
-              [NO-DEFAULT-PACKAGES]
-              [NO-PACKAGES]"
-                 ("\\section{%s}" . "\\section*{%s}")
-                 ("\\subsection{%s}" . "\\subsection*{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-
-  (add-to-list 'org-latex-classes
-               '("446"
-                "
-  \\input{cs446.tex}
-  \\usepackage{sectsty}
-  \\sectionfont{\\fontsize{12}{12}\\selectfont}
-  \\subsectionfont{\\fontsize{12}{12}\\selectfont}
-  \\usepackage{hyperref}
-  \\usepackage{graphicx}
-  \\oddsidemargin 0in
-  \\evensidemargin 0in
-  \\textwidth 6.5in
-  \\topmargin -0.5in
-  \\textheight 9.0in
-  \\pagestyle{myheadings}  % Leave this command alone
-              [NO-DEFAULT-PACKAGES]
-              [EXTRA]"
-                 ("\\section{%s}" . "\\section*{%s}")
-                 ("\\subsection{%s}" . "\\subsection*{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+    (add-to-list 'org-latex-classes
+                 '("446"
+                  "
+    \\input{cs446.tex}
+    \\usepackage{sectsty}
+    \\sectionfont{\\fontsize{12}{12}\\selectfont}
+    \\subsectionfont{\\fontsize{12}{12}\\selectfont}
+    \\usepackage{hyperref}
+    \\usepackage{graphicx}
+    \\oddsidemargin 0in
+    \\evensidemargin 0in
+    \\textwidth 6.5in
+    \\topmargin -0.5in
+    \\textheight 9.0in
+    \\pagestyle{myheadings}  % Leave this command alone
+                [NO-DEFAULT-PACKAGES]
+                [EXTRA]"
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
   (add-to-list 'org-latex-classes
-               '("374"
-                "
-  \\documentclass[11pt]{article}
-  \\usepackage{jeffe,handout,graphicx}
+                 '("panic"
+                  "
+    \\documentclass[11pt]{article}
+    \\usepackage{jeffe,handout,graphicx}
 
-  \\usepackage[utf8]{inputenc}    
-  \\usepackage{sectsty}
-  \\sectionfont{\\fontsize{12}{12}\\selectfont}
-  \\subsectionfont{\\fontsize{12}{12}\\selectfont}
-  \\def\\Sym#1{\\textbf{\\texttt{\\color{BrickRed}#1}}}
-  \\renewcommand{\\qed}{\\rule{1ex}{1ex}}
-  \\usepackage{pifont}
+    \\usepackage[utf8]{inputenc}    
+    \\usepackage{sectsty}
+    \\sectionfont{\\fontsize{14}{13}\\selectfont}
+    \\subsectionfont{\\fontsize{12}{12}\\selectfont}
+    \\def\\Sym#1{\\textbf{\\texttt{\\color{BrickRed}#1}}}
+    \\renewcommand{\\qed}{\\rule{1ex}{1ex}}
+    \\usepackage{pifont}
 
-  \\def\\Spade{\\text{\\ding{171}}}
-  \\def\\Heart{\\text{\\textcolor{Red}{\\ding{170}}}}
-  \\def\\Diamond{\\text{\\textcolor{Red}{\\ding{169}}}}
-  \\def\\Club{\\text{\\ding{168}}}
+    \\def\\Spade{\\text{\\ding{171}}}
+    \\def\\Heart{\\text{\\textcolor{Red}{\\ding{170}}}}
+    \\def\\Diamond{\\text{\\textcolor{Red}{\\ding{169}}}}
+    \\def\\Club{\\text{\\ding{168}}}
 
-  \\Class{CS 374}
-  \\Semester{Fall 2015}
-  \\Authors{3}
-  \\AuthorOne{Akshay Mishra}{akmishr2}
-  \\AuthorTwo{Sachin Ravichandran}{sravich2}
-  \\AuthorThree{Kevin Lin}{kklin4}
-              [NO-DEFAULT-PACKAGES]
-              [NO-PACKAGES]"
+    \\Class{CS 446}
+    \\Semester{Fall 2015}
+    \\Authors{1}
+    \\AuthorOne{Akshay Mishra}{akmishr2}
+                [NO-DEFAULT-PACKAGES]
+                [NO-PACKAGES]"
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+    (add-to-list 'org-latex-classes
+                 '("446"
+                  "
+    \\input{cs446.tex}
+    \\usepackage{sectsty}
+    \\sectionfont{\\fontsize{12}{12}\\selectfont}
+    \\subsectionfont{\\fontsize{12}{12}\\selectfont}
+    \\usepackage{hyperref}
+    \\usepackage{graphicx}
+    \\oddsidemargin 0in
+    \\evensidemargin 0in
+    \\textwidth 6.5in
+    \\topmargin -0.5in
+    \\textheight 9.0in
+    \\pagestyle{myheadings}  % Leave this command alone
+                [NO-DEFAULT-PACKAGES]
+                [EXTRA]"
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+    (add-to-list 'org-latex-classes
+                 '("374"
+                  "
+    \\documentclass[11pt]{article}
+    \\usepackage{jeffe,handout,graphicx}
+    \\usepackage[utf8]{inputenc}    
+    \\usepackage{sectsty}
+    \\sectionfont{\\fontsize{12}{12}\\selectfont}
+    \\subsectionfont{\\fontsize{11}{10}\\selectfont}
+    \\def\\Sym#1{\\textbf{\\texttt{\\color{BrickRed}#1}}}
+    \\usepackage{pifont}
+
+    \\def\\Spade{\\text{\\ding{171}}}
+    \\def\\Heart{\\text{\\textcolor{Red}{\\ding{170}}}}
+    \\def\\Diamond{\\text{\\textcolor{Red}{\\ding{169}}}}
+    \\def\\Club{\\text{\\ding{168}}}
+
+    \\Class{CS 374}
+    \\Semester{Fall 2015}
+    \\Authors{3}
+    \\AuthorOne{Akshay Mishra}{akmishr2}
+    \\AuthorTwo{Sachin Ravichandran}{sravich2}
+    \\AuthorThree{Kevin Lin}{kklin4}
+                [NO-DEFAULT-PACKAGES]
+                [NO-PACKAGES]"
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+    (add-to-list 'org-latex-classes
+                 '("446"
+                  "
+    \\input{cs446.tex}
+    \\usepackage{sectsty}
+    \\sectionfont{\\fontsize{12}{12}\\selectfont}
+    \\subsectionfont{\\fontsize{12}{12}\\selectfont}
+    \\usepackage{hyperref}
+    \\usepackage{graphicx}
+    \\oddsidemargin 0in
+    \\evensidemargin 0in
+    \\textwidth 6.5in
+    \\topmargin -0.5in
+    \\textheight 9.0in
+    \\pagestyle{myheadings}  % Leave this command alone
+                [NO-DEFAULT-PACKAGES]
+                [EXTRA]"
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+    (setq org-export-with-section-numbers nil)
+    (setq org-export-with-toc nil)
+    (setq org-latex-hyperref-template "")
+    (setq org-latex-with-hyperref nil)
+    (add-hook 'doc-view-mode-hook 'auto-revert-mode)
+    (require 'org)
+    (defun org-body-pdf ()
+      (interactive)
+      (org-latex-export-to-pdf (nil nil nil nil t)))
+
+
+    (setq org-export-with-author t)
+    (setq org-list-allow-alphabetical t)
+(add-to-list 'org-latex-classes
+               `("copernicus_discussions"
+                 "\\documentclass{copernicus_discussions}
+               [NO-DEFAULT-PACKAGES]
+               [PACKAGES]
+               [EXTRA]"
                  ("\\section{%s}" . "\\section*{%s}")
-                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsection{%s}" "\\newpage" "\\subsection*{%s}" "\\newpage")
                  ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                  ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-
-  (add-to-list 'org-latex-classes
-               '("446"
-                "
-  \\input{cs446.tex}
-  \\usepackage{sectsty}
-  \\sectionfont{\\fontsize{12}{12}\\selectfont}
-  \\subsectionfont{\\fontsize{12}{12}\\selectfont}
-  \\usepackage{hyperref}
-  \\usepackage{graphicx}
-  \\oddsidemargin 0in
-  \\evensidemargin 0in
-  \\textwidth 6.5in
-  \\topmargin -0.5in
-  \\textheight 9.0in
-  \\pagestyle{myheadings}  % Leave this command alone
-              [NO-DEFAULT-PACKAGES]
-              [EXTRA]"
-                 ("\\section{%s}" . "\\section*{%s}")
-                 ("\\subsection{%s}" . "\\subsection*{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-
-  (setq org-export-with-section-numbers nil)
-  (setq org-export-with-toc nil)
-  (setq org-latex-hyperref-template "")
-  (setq org-latex-with-hyperref nil)
-  (add-hook 'doc-view-mode-hook 'auto-revert-mode)
-  (require 'org)
-  (defun org-body-pdf ()
-    (interactive)
-    (org-latex-export-to-pdf (nil nil nil nil t)))
-
-
-  (setq org-export-with-author t)
-  (setq org-list-allow-alphabetical t)
-
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
+               )
 
 
 #+END_SRC

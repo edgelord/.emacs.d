@@ -62,13 +62,17 @@
 * Packages Settings
 ** UI
 #+BEGIN_SRC emacs-lisp +n
+  (setq ns-use-srgb-colorspace nil)
   (require 'smartparens-config)
+  (require 'spaceline-config)
+
+  (spaceline-emacs-theme)
 
   (require 'rainbow-delimiters)
   (require 'bash-completion)
   (require 'powerline)
 
-  (load-theme 'zenburn t)
+  (load-theme 'material t)
 
   ;; (powerline-default-theme)
   (add-hook 'prog-mode-hook (lambda ()
@@ -443,6 +447,7 @@
   (add-hook 'shell-mode-hook 'my-shell-hook)
   (define-key comint-mode-map (kbd "C-c s")'erase-buffer)
   (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+
   (global-set-key (kbd "s-n") 'flycheck-next-error)
   (global-set-key (kbd "s-p") 'flycheck-previous-error)
   (global-set-key (kbd "ESC ESC") (lambda () (interactive) (message "Cancel")))

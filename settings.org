@@ -63,6 +63,7 @@
 ** UI
 #+BEGIN_SRC emacs-lisp +n
   (setq ns-use-srgb-colorspace nil)
+
   (require 'smartparens-config)
   (require 'spaceline-config)
 
@@ -442,7 +443,8 @@
   ;; Keybindings
   (defun my-shell-hook ()
     (local-set-key "\C-c s" 'erase-buffer))
-
+  (define-key comint-mode-map (kbd "s-p") 'comint-previous-input)
+  (define-key comint-mode-map (kbd "s-n") 'comint-next-input)
   (define-key python-mode-map (kbd "C-c p") 'py-autopep8-buffer)
   (add-hook 'shell-mode-hook 'my-shell-hook)
   (define-key comint-mode-map (kbd "C-c s")'erase-buffer)

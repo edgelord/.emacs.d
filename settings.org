@@ -73,7 +73,7 @@
   (require 'bash-completion)
   (require 'powerline)
 
-  (load-theme 'material t)
+  (load-theme 'spacemacs-dark t)
 
   ;; (powerline-default-theme)
   (add-hook 'prog-mode-hook (lambda ()
@@ -199,9 +199,10 @@
 * Lanugages
 ** Haskell
 #+BEGIN_SRC emacs-lisp
-(add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
-(add-hook 'haskell-indent-simple 'turn-on-haskell-simple-indent)
-(add-hook 'haskell-mode-hook 'turn-on-hi2)
+;; (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+(add-hook 'haskell-mode-hook 'structured-haskell-mode)
+;; (add-hook 'haskell-indent-simple 'turn-on-haskell-simple-indent)
+;; (add-hook 'haskell-mode-hook 'turn-on-hi2)
 (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
 #+END_SRC
 
@@ -273,7 +274,8 @@
   (setq venv-location "~/Development/Virtual_Environments/")
   (org-babel-do-load-languages
     'org-babel-load-languages
-    '((python . t)))
+    '((python . t)
+))
 #+END_SRC
 ** Octave
 #+BEGIN_SRC emacs-lisp
@@ -308,141 +310,148 @@
 #+END_SRC
 * Custom Funcions
 #+BEGIN_SRC emacs-lisp
-(setq longlines-wrap-follows-window-size t)
-(global-set-key [(control meta l)] 'longlines-mode)
-  (defun configure ()
-    (interactive)
-    (find-file "~/.emacs.d/settings.org"))
+    (setq longlines-wrap-follows-window-size t)
+    (global-set-key [(control meta l)] 'longlines-mode)
+      (defun configure ()
+        (interactive)
+        (find-file "~/.emacs.d/settings.org"))
 
-  (defun reload-config ()
-    (interactive)
-    (org-babel-load-file "~/.emacs.d/settings.org"))
+      (defun reload-config ()
+        (interactive)
+        (org-babel-load-file "~/.emacs.d/settings.org"))
 
-  (defun my-next-buffer (buff-func)
-    "next-buffer, only skip *Messages*"
-    (funcall buff-func)
-    (while (and (not (-contains? primary-modes (symbol-name major-mode)))
-                (= 42 (aref (buffer-name) 0)))
-      (funcall buff-func)))
+      (defun my-next-buffer (buff-func)
+        "next-buffer, only skip *Messages*"
+        (funcall buff-func)
+        (while (and (not (-contains? primary-modes (symbol-name major-mode)))
+                    (= 42 (aref (buffer-name) 0)))
+          (funcall buff-func)))
 
-  (defun nxt ()
-    (interactive)
-    (my-next-buffer (function next-buffer)))
+      (defun nxt ()
+        (interactive)
+        (my-next-buffer (function next-buffer)))
 
-  (defun prv ()
-    (interactive)
-    (my-next-buffer (function previous-buffer)))
+      (defun prv ()
+        (interactive)
+        (my-next-buffer (function previous-buffer)))
 
-  (global-set-key [remap next-buffer] 'nxt)
-  (global-set-key [remap previous-buffer] 'prv)
+      (global-set-key [remap next-buffer] 'nxt)
+      (global-set-key [remap previous-buffer] 'prv)
 
-  (defun my/kill-buffer ()
-    (interactive)
-    (when (not (equal "agenda.org" (buffer-name)))
-      (kill-this-buffer))
-    (nxt))
+      (defun my/kill-buffer ()
+        (interactive)
+        (when (not (equal "agenda.org" (buffer-name)))
+          (kill-this-buffer))
+        (nxt))
 
-  (global-set-key [remap kill-this-buffer] 'my/kill-buffer)
+      (global-set-key [remap kill-this-buffer] 'my/kill-buffer)
 
-  (defun current-mode ()
-    (interactive)
-    (message (symbol-name major-mode)))
+      (defun current-mode ()
+        (interactive)
+        (message (symbol-name major-mode)))
 
-  (defun ews ()
-    (interactive)
-    (find-file "/ssh:akmishr2@remlnx.ews.illinois.edu:/home/akmishr2"))
+      (defun ews ()
+        (interactive)
+        (find-file "/ssh:akmishr2@remlnx.ews.illinois.edu:/home/akmishr2"))
 
-  (defun 241vm ()
-    (interactive)
-    (find-file "/ssh:akmishr2@fa15-cs241-136.cs.illinois.edu:/"))
+      (defun ews ()
+        (interactive)
+        (find-file "/ssh:akmishr2@remlnx.ews.illinois.edu|"))
+      (defun 241vm ()
+        (interactive)
+        (find-file "/ssh:akmishr2@sp16-cs241-000.cs.illinois.edu|ssh:akmishr2@sp16-cs241-000.cs.illinois.edu:/"))
 
-  (defun revert-buffer-no-confirm ()
-    "Revert buffer without confirmation."
-    (interactive) (revert-buffer t t))
+      (defun revert-buffer-no-confirm ()
+        "Revert buffer without confirmation."
+        (interactive) (revert-buffer t t))
 
-  (defun smart-kill-line ()
-    "Kills line and fixes indentation"
-    (interactive)
-    (kill-line)
-    (indent-according-to-mode))
+      (defun smart-kill-line ()
+        "Kills line and fixes indentation"
+        (interactive)
+        (kill-line)
+        (indent-according-to-mode))
 
-  (defun smart-kill-whole-line ()
-    (interactive)
-    (kill-whole-line)
-    (beginning-of-line-text))
+      (defun smart-kill-whole-line ()
+        (interactive)
+        (kill-whole-line)
+        (beginning-of-line-text))
 
-  (global-set-key (kbd "C-k") 'smart-kill-line)
-  (global-set-key (kbd "C-S-k") 'smart-kill-whole-line)
+      (global-set-key (kbd "C-k") 'smart-kill-line)
+      (global-set-key (kbd "C-S-k") 'smart-kill-whole-line)
 
-  (defun smart-line-beginning ()
-    "Move point to the beginning of text on the current line; if that is already
-    the current position of point, then move it to the beginning of the line."
-    (interactive)
-    (let ((pt (point)))
-      (beginning-of-line-text)
-      (when (eq pt (point))
-        (beginning-of-line))))
+      (defun smart-line-beginning ()
+        "Move point to the beginning of text on the current line; if that is already
+        the current position of point, then move it to the beginning of the line."
+        (interactive)
+        (let ((pt (point)))
+          (beginning-of-line-text)
+          (when (eq pt (point))
+            (beginning-of-line))))
 
-  (defun smart-open-line ()
-    "Insert an empty line after the current line.
-     Position the cursor at its beginning, according to the current mode."
-    (interactive)
-    (move-end-of-line nil)
-    (newline-and-indent))
+      (defun smart-open-line ()
+        "Insert an empty line after the current line.
+         Position the cursor at its beginning, according to the current mode."
+        (interactive)
+        (move-end-of-line nil)
+        (newline-and-indent))
 
-  (defun smart-open-line-above ()
-    "Insert an empty line above the current line.
-    Position the cursor at it's beginning, according to the current mode."
-    (interactive)
-    (move-beginning-of-line nil)
-    (newline-and-indent)
-    (forward-line -1)
-    (indent-according-to-mode))
+      (defun smart-open-line-above ()
+        "Insert an empty line above the current line.
+        Position the cursor at it's beginning, according to the current mode."
+        (interactive)
+        (move-beginning-of-line nil)
+        (newline-and-indent)
+        (forward-line -1)
+        (indent-according-to-mode))
 
-  (defun py-open-line ()
-    "Insert an empty line after the current line.
-     Position the cursor at its beginning, according to the current mode."
-    (interactive)
-    (move-end-of-line nil)
-    (newline-and-indent))
+      (defun py-open-line ()
+        "Insert an empty line after the current line.
+         Position the cursor at its beginning, according to the current mode."
+        (interactive)
+        (move-end-of-line nil)
+        (newline-and-indent))
 
-  (defun py-open-line-above ()
-    "Insert an empty line above the current line.
-    Position the cursor at it's beginning, according to the current mode."
-    (interactive)
-    (move-beginning-of-line nil)
-    (newline-and-indent)
-    (forward-line -1)
-    (indent-according-to-mode))
+      (defun py-open-line-above ()
+        "Insert an empty line above the current line.
+        Position the cursor at it's beginning, according to the current mode."
+        (interactive)
+        (move-beginning-of-line nil)
+        (newline-and-indent)
+        (forward-line -1)
+        (indent-according-to-mode))
 
-  (dolist (command '(yank yank-pop))
-     (eval `(defadvice ,command (after indent-region activate)
-              (and (not current-prefix-arg)
-                   (member major-mode '(emacs-lisp-mode lisp-mode
-                                                        clojure-mode    scheme-mode
-                                                        haskell-mode    ruby-mode
-                                                        rspec-mode      python-mode
-                                                        c-mode          c++-mode
-                                                        objc-mode       latex-mode
-                                                        plain-tex-mode))
-                   (let ((mark-even-if-inactive transient-mark-mode))
-                     (indent-region (region-beginning) (region-end) nil))))))
+      (dolist (command '(yank yank-pop))
+         (eval `(defadvice ,command (after indent-region activate)
+                  (and (not current-prefix-arg)
+                       (member major-mode '(emacs-lisp-mode lisp-mode
+                                                            clojure-mode    scheme-mode
+                                                            haskell-mode    ruby-mode
+                                                            rspec-mode      python-mode
+                                                            c-mode          c++-mode
+                                                            objc-mode       latex-mode
+                                                            plain-tex-mode))
+                       (let ((mark-even-if-inactive transient-mark-mode))
+                         (indent-region (region-beginning) (region-end) nil))))))
 
-  (defun visit-term-buffer ()
-    "Create or visit a terminal buffer."
-    (interactive)
-    (if (not (get-buffer "*shell*"))
-        (progn
-          (split-window-sensibly (selected-window))
-          (other-window 1)
-          (shell))
-      (switch-to-buffer-other-window "*shell*")))
+      (defun visit-term-buffer ()
+        "Create or visit a terminal buffer."
+        (interactive)
+        (if (not (get-buffer "*shell*"))
+            (progn
+              (split-window-sensibly (selected-window))
+              (other-window 1)
+              (shell))
+          (switch-to-buffer-other-window "*shell*")))
+  (add-to-list 'load-path 
+  "~/.stack/global-project/.stack-work/install/x86_64-osx/lts-3.22/7.10.2/bin/structured-haskell-mode")
+
 #+END_SRC
 * Keybindings
 #+BEGIN_SRC emacs-lisp +n
   ;; Keybindings
   (defun my-shell-hook ()
     (local-set-key "\C-c s" 'erase-buffer))
+  (global-unset-key (kbd "s-t"))
   (define-key comint-mode-map (kbd "s-p") 'comint-previous-input)
   (define-key comint-mode-map (kbd "s-n") 'comint-next-input)
   (define-key python-mode-map (kbd "C-c p") 'py-autopep8-buffer)

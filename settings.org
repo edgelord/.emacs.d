@@ -78,7 +78,7 @@
   (require 'spaceline-config)
 
   (spaceline-emacs-theme)
-  (setq-default powerline-default-separator 'arrow)
+  (setq-default powerline-default-separator 'slant)
 
   (require 'rainbow-delimiters)
   (require 'bash-completion)

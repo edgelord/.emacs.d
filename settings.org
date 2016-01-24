@@ -16,8 +16,12 @@
 ** Package List
 #+BEGIN_SRC emacs-lisp +n
   (setq package-list
-        '(helm
+        '(projectile
           popwin
+          helm
+          helm-projectile
+          helm-swoop
+          
 
           smartparens
           rainbow-delimiters
@@ -63,10 +67,8 @@
   (when (memq window-system '(mac ns))
     (exec-path-from-shell-initialize))
 #+END_SRC
-* Packages Settings
-** UI
+* UI
 #+BEGIN_SRC emacs-lisp +n
-  (spaceline-emacs-theme)
   (fancy-battery-mode)
   (display-time)
 
@@ -76,7 +78,7 @@
   (require 'spaceline-config)
 
   (spaceline-emacs-theme)
-  (setq-default powerline-default-separator 'wave)
+  (setq-default powerline-default-separator 'arrow)
 
   (require 'rainbow-delimiters)
   (require 'bash-completion)
@@ -100,6 +102,7 @@
   (setq initial-scratch-message nil)
   (setq default-cursor-type 'bar)
 #+END_SRC
+* Packages Settings
 ** Autosave
 #+BEGIN_SRC emacs-lisp +n
   (defvar my-auto-save-folder "~/.emacs.d/auto-save/")
@@ -161,6 +164,13 @@
   (global-set-key (kbd "s-/") 'set-rectangular-region-anchor)
 
 #+END_SRC
+** Projectile
+#+BEGIN_SRC emacs-lisp +n
+  (projectile-global-mode +1)
+  (setq projectile-enable-caching t)
+
+#+END_SRC
+
 ** Helm
 #+BEGIN_SRC emacs-lisp +n
   (require 'helm)
@@ -229,6 +239,7 @@
 
 ** C/C++
 #+BEGIN_SRC emacs-lisp
+
   (setq-default c-basic-offset 4
                 tab-width 4
                 indent-tabs-mode t)
@@ -247,6 +258,7 @@
 
   (global-set-key (kbd "C-o") 'smart-open-line-above)
   (global-set-key [(control return)]'smart-open-line)
+  ;;(define-key c-mode-map (kbd "C-c p") 'ff-find-other-file)
 
 
   ;; (add-hook 'c-mode-common-hook (lambda () (nlinum-mode)))
@@ -472,6 +484,18 @@
   ;; Keybindings
   (defun my-shell-hook ()
     (local-set-key "\C-c s" 'erase-buffer))
+
+  (define-prefix-command 'pfx1)
+  (global-set-key (kbd "<f17>") 'pfx1)
+  (global-set-key (kbd "§") 'pfx1)
+  (global-set-key (kbd "\10") 'pfx1)
+  (global-set-key (kbd "§ c") 'configure)
+
+  (defmacro defkbalias (old new)
+    `(define-key (current-global-map) ,new
+       (lookup-key (current-global-map) ,old)))
+
+  ;; (defkbalias (kbd "C-g") (kbd "C-q"))
   (global-unset-key (kbd "s-t"))
   (define-key comint-mode-map (kbd "s-p") 'comint-previous-input)
   (define-key comint-mode-map (kbd "s-n") 'comint-next-input)
@@ -521,7 +545,7 @@
   (global-set-key (kbd "M-;") 'evilnc-comment-or-uncomment-lines)
   (global-set-key (kbd "C-c l") 'evilnc-quick-comment-or-uncomment-to-the-line)
   (global-set-key (kbd "C-c c") 'evilnc-copy-and-comment-lines)
-  (global-set-key (kbd "C-c p") 'evilnc-comment-or-uncomment-paragraphs)
+  ;; (global-set-key (kbd "C-c p") 'evilnc-comment-or-uncomment-paragraphs)
   (global-set-key (kbd "C-x C-m") 'helm-M-x)
   (global-set-key (kbd "C-c g") 'magit-status)
 

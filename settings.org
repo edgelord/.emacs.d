@@ -193,14 +193,20 @@
   ;;     (apply orig-fun args)))
   ;; (advice-add 'helm-ff-delete-char-backward :around #'/helm-find-files-navigate-back)
 
-  (push '("^\*helm.+\*$" :regexp t) popwin:special-display-config)
+  (add-to-list 'display-buffer-alist
+               `(,(rx bos "*helm" (* not-newline) "*" eos)
+                 (display-buffer-in-side-window)
+                 (inhibit-same-window . t)
+                 (window-height . 0.2)))
 
-  (add-hook 'helm-after-initialize-hook (lambda ()
-                                          (popwin:display-buffer helm-buffer t)
-                                          (popwin-mode -1)))
+  ;; POPWIN
+  ;; (push '("^\*helm.+\*$" :regexp t) popwin:special-display-config)
+  ;; (add-hook 'helm-after-initialize-hook (lambda ()
+  ;;                                         (popwin:display-buffer helm-buffer t)
+  ;;                                         (popwin-mode -1)))
 
   ;;  Restore popwin-mode after a Helm session finishes.
-  (add-hook 'helm-cleanup-hook (lambda () (popwin-mode 1)))
+  ;; (add-hook 'helm-cleanup-hook (lambda () (popwin-mode 1)))
 #+END_SRC
  
 ** Yasnippet
@@ -484,7 +490,7 @@
   ;; Keybindings
   (defun my-shell-hook ()
     (local-set-key "\C-c s" 'erase-buffer))
-
+  (global-set-key (kbd "s-s") 'helm-swoop)
   (define-prefix-command 'pfx1)
   (global-set-key (kbd "<f17>") 'pfx1)
   (global-set-key (kbd "§") 'pfx1)

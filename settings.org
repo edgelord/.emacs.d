@@ -1,39 +1,30 @@
-* Package Installations
-** Setup Package Manager
-#+BEGIN_SRC emacs-lisp +n 
-  (require 'package)
-  (add-to-list 'package-archives
-               '("melpa" . "http://melpa.org/packages/") t)
-  (when (< emacs-major-version 24)
-  ;; For important compatibility libraries like cl-lib
-    (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
-  (package-initialize)
-
-  ; fetch the list of packages available 
-  (unless package-archive-contents
-    (package-refresh-contents))
-#+END_SRC
-** Package List
+* Package List
 #+BEGIN_SRC emacs-lisp +n
   (setq package-list
         '(projectile
           popwin
-          helm
-          helm-projectile
-          helm-swoop
-          
 
+          use-package
+
+          ivy
+          counsel
+          swiper
+          
           smartparens
           rainbow-delimiters
           
           better-defaults
+          spacemacs-theme
+          powerline
+          spaceline
+
           exec-path-from-shell
           bash-completion
+
           multiple-cursors
           evil-nerd-commenter
 
           ace-jump-mode
-          god-mode
 
           flycheck
           magit
@@ -42,43 +33,47 @@
           nlinum
           undo-tree
           
-          fancy-battery
-          spacemacs-theme
-          powerline
-
-
           haskell-mode
-          shm
-          
-          ein
+          flycheck-haskell
+          company-ghc
+          hi2
+
+          python-mode
           anaconda-mode
           company-anaconda
           pyenv-mode
           virtualenvwrapper))
-
-
 #+END_SRC
-** Install packages
-#+BEGIN_SRC emacs-lisp +n
+** Setup Packages
+#+BEGIN_SRC emacs-lisp +n 
+  (require 'package)
+  (add-to-list 'package-archives
+               '("melpa" . "http://melpa.org/packages/") t)
+  (when (< emacs-major-version 24)
+    ;; For important compatibility libraries like cl-lib
+    (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
+  (package-initialize)
+
+                                          ; fetch the list of packages available 
+  (unless package-archive-contents
+    (package-refresh-contents))
+
   (dolist (package package-list) ;Installs missing packages
     (unless (package-installed-p package)
       (package-install package)))
 
   (when (memq window-system '(mac ns))
     (exec-path-from-shell-initialize))
+
 #+END_SRC
 * UI
 #+BEGIN_SRC emacs-lisp +n
-  (fancy-battery-mode)
   (display-time)
-
-  (setq ns-use-srgb-colorspace nil)
-
   (require 'smartparens-config)
   (require 'spaceline-config)
 
   (spaceline-emacs-theme)
-  (setq-default powerline-default-separator 'slant)
+  (setq-default powerline-default-separator nil)
 
   (require 'rainbow-delimiters)
   (require 'bash-completion)
@@ -86,7 +81,6 @@
 
   (load-theme 'spacemacs-dark t)
 
-  ;; (powerline-default-theme)
   (add-hook 'prog-mode-hook (lambda ()
                               (rainbow-delimiters-mode)
                               (nlinum-mode)))
@@ -102,40 +96,40 @@
   (setq initial-scratch-message nil)
   (setq default-cursor-type 'bar)
 #+END_SRC
-* Packages Settings
+** Ivy
+#+BEGIN_SRC emacs-lisp +n
+  (use-package ivy
+    :config
+    (ivy-mode 1)
+    (setq ivy-use-virtual-buffers)
+    :bind
+    (("C-s" . swiper)
+     ("C-c C-r" . ivy-resume)
+     ("<f6>" . ivy-resume)
+     ("M-x" . counsel-M-x)
+     ("M-y" . counsel-yank-pop)
+     ("C-x C-f" . counsel-find-file)
+     ("C-h f" . counsel-describe-function)
+     ("C-h v" . counsel-describe-variable)
+     ("C-h l" . counsel-load-library)
+     ("C-h i" . counsel-info-lookup-symbol)
+     ("C-S-u" . counsel-unicode-char)
+     ("C-c g" . counsel-git)
+     ("C-c j" . counsel-git-grep)
+     ("C-c k" . counsel-ag)
+     ("C-x l" . counsel-locate)
+     ("C-S-o" . counsel-rhythmbox)
+     :map read-expression-map
+     ("C-r"   . counsel-expression-history))
+    )
+#+END_SRC
+
 ** Autosave
 #+BEGIN_SRC emacs-lisp +n
   (defvar my-auto-save-folder "~/.emacs.d/auto-save/")
   (setq auto-save-list-file-prefix "~/.emacs.d/auto-save/.saves-"); set prefix for auto-saves 
   (setq auto-save-file-name-transforms `((".*", my-auto-save-folder t))); location for all auto-save files
   (setq tramp-auto-save-directory my-auto-save-folder)
-#+END_SRC
-** God Mode
-#+BEGIN_SRC NOT_LOADING +n
-  (require 'god-mode)
-  (god-mode)
-
-  (add-to-list 'god-exempt-major-modes 'magit-mode)
-  (setq default-cursor-type 'bar)
-  (defun my-update-cursor ()
-    (setq cursor-type (if (or god-local-mode buffer-read-only)
-                          'box
-                        'bar)))
-
-  (add-hook 'god-mode-enabled-hook 'my-update-cursor)
-  (add-hook 'god-mode-disabled-hook 'my-update-cursor)
-
-  (global-set-key (kbd "<escape>") 'god-local-mode)
-  (define-key god-local-mode-map (kbd "i") 'god-local-mode)
-  (define-key god-local-mode-map (kbd ".") 'repeat)
-
-
-
-  (global-set-key (kbd "C-x C-1") 'delete-other-windows)
-  (global-set-key (kbd "C-x C-2") 'split-window-below)
-  (global-set-key (kbd "C-x C-3") 'split-window-right)
-  (global-set-key (kbd "C-x C-0") 'delete-window)
-
 #+END_SRC
 ** Popwin
 #+BEGIN_SRC emacs-lisp +n
@@ -146,13 +140,19 @@
 ** Linum Modes
 #+BEGIN_SRC emacs-lisp +n
   (setq nlinum-format " %d ")
-
   (add-hook 'nlinum-mode-hook
             (lambda ()
               (setq nlinum--width
                 (length (number-to-string
                          (count-lines (point-min) (point-max)))))))
 #+END_SRC
+** Projectile
+#+BEGIN_SRC emacs-lisp +n
+  (projectile-global-mode +1)
+  (setq projectile-enable-caching t)
+  (setq projectile-completion-system 'ivy)
+#+END_SRC
+
 ** Multiple Cursors
 #+BEGIN_SRC emacs-lisp +n
   (require 'multiple-cursors)
@@ -164,92 +164,32 @@
   (global-set-key (kbd "s-/") 'set-rectangular-region-anchor)
 
 #+END_SRC
-** Projectile
-#+BEGIN_SRC emacs-lisp +n
-  (projectile-global-mode +1)
-  (setq projectile-enable-caching t)
 
-#+END_SRC
-
-** Helm
-#+BEGIN_SRC emacs-lisp +n
-  (require 'helm)
-  (require 'helm-config)
-
-  (global-set-key (kbd "C-c h") 'helm-command-prefix)
-  (global-set-key (kbd "M-x") 'helm-M-x)
-  (global-set-key (kbd "C-x C-f") 'helm-find-files)
-  (global-set-key (kbd "C-x C-b") 'helm-buffers-list)
-  ;; (defun /helm-find-files-navigate-forward (orig-fun &rest args)
-  ;;   (if (file-directory-p (helm-get-selection))
-  ;;       (apply orig-fun args)
-  ;;     (helm-maybe-exit-minibuffer)))
-  ;; (advice-add 'helm-execute-persistent-action :around #'/helm-find-files-navigate-forward)
-  ;; (define-key helm-find-files-map (kbd "<return>") 'helm-execute-persistent-action)
-
-  ;; (defun /helm-find-files-navigate-back (orig-fun &rest args)
-  ;;   (if (= (length helm-pattern) (length (helm-find-files-initial-input)))
-  ;;       (helm-find-files-up-one-level 1)
-  ;;     (apply orig-fun args)))
-  ;; (advice-add 'helm-ff-delete-char-backward :around #'/helm-find-files-navigate-back)
-
-  (add-to-list 'display-buffer-alist
-               `(,(rx bos "*helm" (* not-newline) "*" eos)
-                 (display-buffer-in-side-window)
-                 (inhibit-same-window . t)
-                 (window-height . 0.2)))
-
-  ;; POPWIN
-  ;; (push '("^\*helm.+\*$" :regexp t) popwin:special-display-config)
-  ;; (add-hook 'helm-after-initialize-hook (lambda ()
-  ;;                                         (popwin:display-buffer helm-buffer t)
-  ;;                                         (popwin-mode -1)))
-
-  ;;  Restore popwin-mode after a Helm session finishes.
-  ;; (add-hook 'helm-cleanup-hook (lambda () (popwin-mode 1)))
-#+END_SRC
- 
-** Yasnippet
-#+BEGIN_SRC emacs-lisp-comment
-  (require 'yasnippet)
-  (setq yas-snippet-dirs
-        '("~/.emacs.d/snippets"                 ;; personal snippets
-          "/path/to/some/collection/"           ;; foo-mode and bar-mode snippet collection
-          "/path/to/yasnippet/yasmate/snippets" ;; the yasmate collection
-          "/path/to/yasnippet/snippets"         ;; the default collection
-          ))
-
-  (yas-global-mode 1) ;; 
-#+END_SRC
 * Lanugages
 ** Haskell
 #+BEGIN_SRC emacs-lisp
-;; (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
-(add-hook 'haskell-mode-hook 'structured-haskell-mode)
-;; (add-hook 'haskell-indent-simple 'turn-on-haskell-simple-indent)
-;; (add-hook 'haskell-mode-hook 'turn-on-hi2)
-(add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
-(custom-set-variables
-  '(haskell-process-suggest-remove-import-lines t)
-  '(haskell-process-auto-import-loaded-modules t)
-  '(haskell-process-log t))
-(eval-after-load 'haskell-mode '(progn
-  (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
-  (define-key haskell-mode-map (kbd "C-c C-z") 'haskell-interactive-switch)
-  (define-key haskell-mode-map (kbd "C-c C-n C-t") 'haskell-process-do-type)
-  (define-key haskell-mode-map (kbd "C-c C-n C-i") 'haskell-process-do-info)
-  (define-key haskell-mode-map (kbd "C-c C-n C-c") 'haskell-process-cabal-build)
-  (define-key haskell-mode-map (kbd "C-c C-n c") 'haskell-process-cabal)
-  (define-key haskell-mode-map (kbd "SPC") 'haskell-mode-contextual-space)))
+  (add-hook 'haskell-mode-hook 'turn-on-hi2)
+  (add-hook 'haskell-mode-hook             'interactive-haskell-mode)
+  (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
+  (custom-set-variables
+   '(haskell-process-suggest-remove-import-lines t)
+   '(haskell-process-auto-import-loaded-modules t)
+   '(haskell-process-log t))
+  (eval-after-load 'haskell-mode 
+    '(progn
+       (define-key haskell-mode-map (kbd "C-c C-c") 'haskell-process-load-or-reload)
+       (define-key haskell-mode-map (kbd "C-c C-z") 'haskell-interactive-switch)
+       (define-key haskell-mode-map (kbd "C-c C-n C-t") 'haskell-process-do-type)
+       (define-key haskell-mode-map (kbd "C-c C-n C-i") 'haskell-process-do-info)
+       (define-key haskell-mode-map (kbd "C-c C-n C-c") 'haskell-process-cabal-build)
+       (define-key haskell-mode-map (kbd "C-c C-n c") 'haskell-process-cabal)
+       (define-key haskell-mode-map (kbd "SPC") 'haskell-mode-contextual-space)))
 #+END_SRC
-
 ** C/C++
 #+BEGIN_SRC emacs-lisp
-
   (setq-default c-basic-offset 4
                 tab-width 4
                 indent-tabs-mode t)
-
   (setq c-default-style "linux"
         c-basic-offset 4)
   (defun my-open-block-c-mode (id action context)
@@ -260,34 +200,6 @@
       (previous-line)
       (indent-according-to-mode)))
   (add-hook 'c++-mode-hook (lambda () (setq flycheck-clang-language-standard "c++11")))
-
-
-  (global-set-key (kbd "C-o") 'smart-open-line-above)
-  (global-set-key [(control return)]'smart-open-line)
-  ;;(define-key c-mode-map (kbd "C-c p") 'ff-find-other-file)
-
-
-  ;; (add-hook 'c-mode-common-hook (lambda () (nlinum-mode)))
-  ;; (sp-local-pair 'c-mode "{" nil :post-handlers '(:add my-open-block-c-mode))
-  ;; (add-hook 'c++-mode-hook 'irony-mode)
-  ;; (add-hook 'c-mode-hook 'irony-mode)
-  ;; (add-hook 'objc-mode-hook 'irony-mode)
-
-  ;; (defun my-irony-mode-hook ()
-  ;;   (define-key irony-mode-map [remap completion-at-point]
-  ;;     'irony-completion-at-point-async)
-  ;;   (define-key irony-mode-map [remap complete-symbol]
-  ;;     'irony-completion-at-point-async))
-  ;; (add-hook 'irony-mode-hook 'my-irony-mode-hook)
-  ;; (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
-
-  ;; (eval-after-load 'flycheck
-  ;;   '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
-
-  ;; (eval-after-load 'company
-  ;;   '(add-to-list 'company-backends 'company-irony))
-
-  ;; (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
 #+END_SRC
 ** Python
 #+BEGIN_SRC emacs-lisp
@@ -318,7 +230,7 @@
 #+END_SRC
 ** Octave
 #+BEGIN_SRC emacs-lisp
-  ;; (autoload 'octave-mode "octave-mod" nil t)
+ (autoload 'octave-mode "octave-mod" nil t)
             (setq auto-mode-alist
                   (cons '("\\.m$" . octave-mode) auto-mode-alist))
 
@@ -346,404 +258,124 @@
           "inferior-octave-mode"
           "magit-mode"
           "magit-status-mode"))
+  (setq longlines-wrap-follows-window-size t)
 #+END_SRC
 * Custom Funcions
 #+BEGIN_SRC emacs-lisp
-    (setq longlines-wrap-follows-window-size t)
-    (global-set-key [(control meta l)] 'longlines-mode)
-      (defun configure ()
-        (interactive)
-        (find-file "~/.emacs.d/settings.org"))
+  (defun configure/emacs ()
+    (interactive)
+    (find-file "~/.emacs.d/settings.org"))
 
-      (defun reload-config ()
-        (interactive)
-        (org-babel-load-file "~/.emacs.d/settings.org"))
+  (defun reload/emacs ()
+    (interactive)
+    (org-babel-load-file "~/.emacs.d/settings.org"))
 
-      (defun my-next-buffer (buff-func)
-        "next-buffer, only skip *Messages*"
-        (funcall buff-func)
-        (while (and (not (-contains? primary-modes (symbol-name major-mode)))
-                    (= 42 (aref (buffer-name) 0)))
-          (funcall buff-func)))
+  (defun nxt ()
+    (interactive)
+    (my-next-buffer (function next-buffer)))
 
-      (defun nxt ()
-        (interactive)
-        (my-next-buffer (function next-buffer)))
+  (defun prv ()
+    (interactive)
+    (my-next-buffer (function previous-buffer)))
 
-      (defun prv ()
-        (interactive)
-        (my-next-buffer (function previous-buffer)))
+  (global-set-key [remap next-buffer] 'nxt)
+  (global-set-key [remap previous-buffer] 'prv)
 
-      (global-set-key [remap next-buffer] 'nxt)
-      (global-set-key [remap previous-buffer] 'prv)
+  (defun custom/kill-buffer ()
+    (interactive)
+    (when (not (equal "agenda.org" (buffer-name)))
+      (kill-this-buffer)
+      (nxt))
+    )
 
-      (defun my/kill-buffer ()
-        (interactive)
-        (when (not (equal "agenda.org" (buffer-name)))
-          (kill-this-buffer))
-        (nxt))
+  (global-set-key [remap kill-this-buffer] 'custom/kill-buffer)
 
-      (global-set-key [remap kill-this-buffer] 'my/kill-buffer)
+  (defun custom/current-mode ()
+    (interactive)
+    (message (symbol-name major-mode)))
 
-      (defun current-mode ()
-        (interactive)
-        (message (symbol-name major-mode)))
+  (defun ssh/ews ()
+    (interactive)
+    (find-file "/ssh:akmishr2@remlnx.ews.illinois.edu:/home/akmishr2"))
 
-      (defun ews ()
-        (interactive)
-        (find-file "/ssh:akmishr2@remlnx.ews.illinois.edu:/home/akmishr2"))
+  (defun custom/refresh ()
+    "Revert buffer without confirmation."
+    (interactive) (revert-buffer t t))
 
-      (defun ews ()
-        (interactive)
-        (find-file "/ssh:akmishr2@remlnx.ews.illinois.edu|"))
-      (defun 241vm ()
-        (interactive)
-        (find-file "/ssh:akmishr2@sp16-cs241-000.cs.illinois.edu|ssh:akmishr2@sp16-cs241-000.cs.illinois.edu:/"))
+  (defun custom/kill-line ()
+    "Kills line and fixes indentation"
+    (interactive)
+    (kill-line)
+    (indent-according-to-mode))
 
-      (defun revert-buffer-no-confirm ()
-        "Revert buffer without confirmation."
-        (interactive) (revert-buffer t t))
+  (defun custom/kill-whole-line ()
+    (interactive)
+    (kill-whole-line)
+    (beginning-of-line-text))
 
-      (defun smart-kill-line ()
-        "Kills line and fixes indentation"
-        (interactive)
-        (kill-line)
-        (indent-according-to-mode))
-
-      (defun smart-kill-whole-line ()
-        (interactive)
-        (kill-whole-line)
-        (beginning-of-line-text))
-
-      (global-set-key (kbd "C-k") 'smart-kill-line)
-      (global-set-key (kbd "C-S-k") 'smart-kill-whole-line)
-
-      (defun smart-line-beginning ()
-        "Move point to the beginning of text on the current line; if that is already
+  (defun custom/line-beginning ()
+    "Move point to the beginning of text on the current line; if that is already
         the current position of point, then move it to the beginning of the line."
-        (interactive)
-        (let ((pt (point)))
-          (beginning-of-line-text)
-          (when (eq pt (point))
-            (beginning-of-line))))
+    (interactive)
+    (let ((pt (point)))
+      (beginning-of-line-text)
+      (when (eq pt (point))
+        (beginning-of-line))))
 
-      (defun smart-open-line ()
-        "Insert an empty line after the current line.
+  (defun custom/open-line ()
+    "Insert an empty line after the current line.
          Position the cursor at its beginning, according to the current mode."
-        (interactive)
-        (move-end-of-line nil)
-        (newline-and-indent))
+    (interactive)
+    (move-end-of-line nil)
+    (newline-and-indent))
 
-      (defun smart-open-line-above ()
-        "Insert an empty line above the current line.
+  (defun custom/open-line-above ()
+    "Insert an empty line above the current line.
         Position the cursor at it's beginning, according to the current mode."
-        (interactive)
-        (move-beginning-of-line nil)
-        (newline-and-indent)
-        (forward-line -1)
-        (indent-according-to-mode))
+    (interactive)
+    (move-beginning-of-line nil)
+    (newline-and-indent)
+    (forward-line -1)
+    (indent-according-to-mode))
 
-      (defun py-open-line ()
-        "Insert an empty line after the current line.
-         Position the cursor at its beginning, according to the current mode."
-        (interactive)
-        (move-end-of-line nil)
-        (newline-and-indent))
+  (defun custom/launch-term ()
+    (interactive)
+    (call-process "termite" nil 0 nil "-d" default-directory))
 
-      (defun py-open-line-above ()
-        "Insert an empty line above the current line.
-        Position the cursor at it's beginning, according to the current mode."
-        (interactive)
-        (move-beginning-of-line nil)
-        (newline-and-indent)
-        (forward-line -1)
-        (indent-according-to-mode))
 
-      (dolist (command '(yank yank-pop))
-         (eval `(defadvice ,command (after indent-region activate)
-                  (and (not current-prefix-arg)
-                       (member major-mode '(emacs-lisp-mode lisp-mode
-                                                            clojure-mode    scheme-mode
-                                                            haskell-mode    ruby-mode
-                                                            rspec-mode      python-mode
-                                                            c-mode          c++-mode
-                                                            objc-mode       latex-mode
-                                                            plain-tex-mode))
-                       (let ((mark-even-if-inactive transient-mark-mode))
-                         (indent-region (region-beginning) (region-end) nil))))))
+  (defun configure/xmonad ()
+    (interactive)
+    (find-file "~/.xmonad/xmonad.hs"))
 
-      (defun visit-term-buffer ()
-        "Create or visit a terminal buffer."
-        (interactive)
-        (if (not (get-buffer "*shell*"))
-            (progn
-              (split-window-sensibly (selected-window))
-              (other-window 1)
-              (shell))
-          (switch-to-buffer-other-window "*shell*")))
-  (add-to-list 'load-path 
-  "~/.stack/global-project/.stack-work/install/x86_64-osx/lts-3.22/7.10.2/bin/structured-haskell-mode")
+  (defun configure/nix-local ()
+    (interactive)
+    (find-file "~/.nixpkgs/config.nix"))
 
+  (defun configure/nix-global ()
+    (interactive)
+    (ido-find-file "/etc/nixos/configuration.nix"))
 #+END_SRC
-* Keybindings
+* Global Keybindings
 #+BEGIN_SRC emacs-lisp +n
-  ;; Keybindings
-  (defun my-shell-hook ()
-    (local-set-key "\C-c s" 'erase-buffer))
-  (global-set-key (kbd "s-s") 'helm-swoop)
-  (define-prefix-command 'pfx1)
-  (global-set-key (kbd "<f17>") 'pfx1)
-  (global-set-key (kbd "§") 'pfx1)
-  (global-set-key (kbd "\10") 'pfx1)
-  (global-set-key (kbd "§ c") 'configure)
-
-  (defmacro defkbalias (old new)
-    `(define-key (current-global-map) ,new
-       (lookup-key (current-global-map) ,old)))
-
-  ;; (defkbalias (kbd "C-g") (kbd "C-q"))
-  (global-unset-key (kbd "s-t"))
-  (define-key comint-mode-map (kbd "s-p") 'comint-previous-input)
-  (define-key comint-mode-map (kbd "s-n") 'comint-next-input)
-  (define-key python-mode-map (kbd "C-c p") 'py-autopep8-buffer)
-  (add-hook 'shell-mode-hook 'my-shell-hook)
-  (define-key comint-mode-map (kbd "C-c s")'erase-buffer)
-  (global-set-key (kbd "M-y") 'helm-show-kill-ring)
-
-  (global-set-key (kbd "s-n") 'flycheck-next-error)
-  (global-set-key (kbd "s-p") 'flycheck-previous-error)
-  (global-set-key (kbd "ESC ESC") (lambda () (interactive) (message "Cancel")))
-  (global-set-key (kbd "<f5>") 'revert-buffer-no-confirm)
-  (global-set-key (kbd "C-a") 'smart-line-beginning)
-  (define-prefix-command 'my/exit)
-  (global-set-key (kbd "s-q") nil)
-  (global-set-key (kbd "s-q") 'my/exit)
-  (global-set-key (kbd "s-q s-q") 'kill-this-buffer)
-  (global-set-key (kbd "s-q s-r") 'exit-recursive-edit)
-  (global-set-key (kbd "s-i") 'sp-down-sexp)
-  (global-set-key (kbd "s-I") 'sp-backward-down-sexp)
-  (global-set-key (kbd "s-o") 'sp-up-sexp)
-  (global-set-key (kbd "s-O") 'sp-backward-up-sexp)
-  (global-set-key (kbd "s-d") 'sp-kill-sexp)
-  (global-set-key (kbd "s-f") 'sp-forward-sexp)
-  (global-set-key (kbd "s-b") 'sp-backward-sexp)
-  (global-set-key (kbd "s-(") '(lambda (&optional arg) (interactive "P") (sp-wrap-with-pair "(")))
-  (global-set-key (kbd "s-{") '(lambda (&optional arg) (interactive "P") (sp-wrap-with-pair "{")))
-  (global-set-key (kbd "s-[") '(lambda (&optional arg) (interactive "P") (sp-wrap-with-pair "[")))
-  (global-set-key (kbd "s-\"") '(lambda (&optional arg) (interactive "P") (sp-wrap-with-pair "\"")))
-  (global-set-key (kbd "s-2") 'sp-splice-sexp)
-  (global-set-key (kbd "s-@") 'sp-splice-sexp-killing-around)
-  (global-set-key (kbd "s-1") 'sp-splice-sexp-killing-backward)
-  (global-set-key (kbd "s-3") 'sp-splice-sexp-killing-forward)
-  (global-set-key (kbd "C-c C-k") 'copy-line)
-  (global-set-key (kbd "s-<") 'previous-buffer)
-  (global-set-key (kbd "s->") 'next-buffer)
-  (global-set-key (kbd "C-;")  'ace-jump-mode)
-  (require 'comint)
-  (define-key comint-mode-map (kbd "<up>") 'comint-previous-input)
-  (define-key comint-mode-map (kbd "<down>") 'comint-next-input)
-  (global-set-key (kbd "C-c t") 'visit-term-buffer)
-  (global-set-key (kbd "C-(") 'sp-backward-slurp-sexp)
-  (global-set-key (kbd "C-)") 'sp-forward-slurp-sexp)
-  (global-set-key (kbd "C-{") 'sp-backward-barf-sexp)
-  (global-set-key (kbd "C-}") 'sp-backward-barf-sexp)
-  ;;; Nerd commenter
-  (global-set-key (kbd "M-;") 'evilnc-comment-or-uncomment-lines)
-  (global-set-key (kbd "C-c l") 'evilnc-quick-comment-or-uncomment-to-the-line)
-  (global-set-key (kbd "C-c c") 'evilnc-copy-and-comment-lines)
-  ;; (global-set-key (kbd "C-c p") 'evilnc-comment-or-uncomment-paragraphs)
-  (global-set-key (kbd "C-x C-m") 'helm-M-x)
-  (global-set-key (kbd "C-c g") 'magit-status)
-
-  (define-key company-active-map (kbd "C-n") 'company-select-next)
-  (define-key company-active-map (kbd "C-p") 'company-select-previous)
-
+  (require 'bind-key)
+  (bind-keys
+   ("C-x C-m" . execute-extended-command)
+   ("C-o"     . custom/open-line-above)
+   ("C-j"     . custom/open-line)
+   ("C-k"     . custom/kill-line)
+   ("C-S-k"   . custom/kill-whole-line)
+   ("C-c t"   . custom/launch-term)
+   ("s->"     . nxt)
+   ("s-<"     . prv)
+   ("s-d"     . sp-kill-sexp)
+   ("M-g S"   . magit-stage-file)
+   )
 #+END_SRC
 * Org settings
 #+BEGIN_SRC emacs-lisp +n
-    (require 'ox-latex)
-(add-to-list 'org-latex-classes
-                 '("paper"
-                  "
-    \\documentclass[11pt,a4paper,twocolumn]{article}
-    \\usepackage[utf8]{inputenc}    
-    \\usepackage{sectsty}
-    \\usepackage{graphicx}
-    \\sectionfont{\\fontsize{14}{13}\\selectfont}
-    \\subsectionfont{\\fontsize{12}{12}\\selectfont}
-    \\def\\Sym#1{\\textbf{\\texttt{\\color{BrickRed}#1}}}
-    \\usepackage{pifont}
-
-    \\def\\Spade{\\text{\\ding{171}}}
-    \\def\\Heart{\\text{\\textcolor{Red}{\\ding{170}}}}
-    \\def\\Diamond{\\text{\\textcolor{Red}{\\ding{169}}}}
-    \\def\\Club{\\text{\\ding{168}}}
-                [NO-DEFAULT-PACKAGES]
-                [NO-PACKAGES]"
-                   ("\\section{%s}" . "\\section*{%s}")
-                   ("\\subsection{%s}" . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-
-    (add-to-list 'org-latex-classes
-                 '("446"
-                  "
-    \\input{cs446.tex}
-    \\usepackage{sectsty}
-    \\sectionfont{\\fontsize{12}{12}\\selectfont}
-    \\subsectionfont{\\fontsize{12}{12}\\selectfont}
-    \\usepackage{hyperref}
-    \\usepackage{graphicx}
-    \\oddsidemargin 0in
-    \\evensidemargin 0in
-    \\textwidth 6.5in
-    \\topmargin -0.5in
-    \\textheight 9.0in
-    \\pagestyle{myheadings}  % Leave this command alone
-                [NO-DEFAULT-PACKAGES]
-                [EXTRA]"
-                   ("\\section{%s}" . "\\section*{%s}")
-                   ("\\subsection{%s}" . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-
-  (add-to-list 'org-latex-classes
-                 '("panic"
-                  "
-    \\documentclass[11pt]{article}
-    \\usepackage{jeffe,handout,graphicx}
-
-    \\usepackage[utf8]{inputenc}    
-    \\usepackage{sectsty}
-    \\sectionfont{\\fontsize{14}{13}\\selectfont}
-    \\subsectionfont{\\fontsize{12}{12}\\selectfont}
-    \\def\\Sym#1{\\textbf{\\texttt{\\color{BrickRed}#1}}}
-    \\renewcommand{\\qed}{\\rule{1ex}{1ex}}
-    \\usepackage{pifont}
-
-    \\def\\Spade{\\text{\\ding{171}}}
-    \\def\\Heart{\\text{\\textcolor{Red}{\\ding{170}}}}
-    \\def\\Diamond{\\text{\\textcolor{Red}{\\ding{169}}}}
-    \\def\\Club{\\text{\\ding{168}}}
-
-    \\Class{CS 446}
-    \\Semester{Fall 2015}
-    \\Authors{1}
-    \\AuthorOne{Akshay Mishra}{akmishr2}
-                [NO-DEFAULT-PACKAGES]
-                [NO-PACKAGES]"
-                   ("\\section{%s}" . "\\section*{%s}")
-                   ("\\subsection{%s}" . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-
-    (add-to-list 'org-latex-classes
-                 '("446"
-                  "
-    \\input{cs446.tex}
-    \\usepackage{sectsty}
-    \\sectionfont{\\fontsize{12}{12}\\selectfont}
-    \\subsectionfont{\\fontsize{12}{12}\\selectfont}
-    \\usepackage{hyperref}
-    \\usepackage{graphicx}
-    \\oddsidemargin 0in
-    \\evensidemargin 0in
-    \\textwidth 6.5in
-    \\topmargin -0.5in
-    \\textheight 9.0in
-    \\pagestyle{myheadings}  % Leave this command alone
-                [NO-DEFAULT-PACKAGES]
-                [EXTRA]"
-                   ("\\section{%s}" . "\\section*{%s}")
-                   ("\\subsection{%s}" . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-
-    (add-to-list 'org-latex-classes
-                 '("374"
-                  "
-    \\documentclass[11pt]{article}
-    \\usepackage{jeffe,handout,graphicx}
-    \\usepackage[utf8]{inputenc}    
-    \\usepackage{sectsty}
-    \\sectionfont{\\fontsize{12}{12}\\selectfont}
-    \\subsectionfont{\\fontsize{11}{10}\\selectfont}
-    \\def\\Sym#1{\\textbf{\\texttt{\\color{BrickRed}#1}}}
-    \\usepackage{pifont}
-
-    \\def\\Spade{\\text{\\ding{171}}}
-    \\def\\Heart{\\text{\\textcolor{Red}{\\ding{170}}}}
-    \\def\\Diamond{\\text{\\textcolor{Red}{\\ding{169}}}}
-    \\def\\Club{\\text{\\ding{168}}}
-
-    \\Class{CS 374}
-    \\Semester{Fall 2015}
-    \\Authors{3}
-    \\AuthorOne{Akshay Mishra}{akmishr2}
-    \\AuthorTwo{Sachin Ravichandran}{sravich2}
-    \\AuthorThree{Kevin Lin}{kklin4}
-                [NO-DEFAULT-PACKAGES]
-                [NO-PACKAGES]"
-                   ("\\section{%s}" . "\\section*{%s}")
-                   ("\\subsection{%s}" . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-
-    (add-to-list 'org-latex-classes
-                 '("446"
-                  "
-    \\input{cs446.tex}
-    \\usepackage{sectsty}
-    \\sectionfont{\\fontsize{12}{12}\\selectfont}
-    \\subsectionfont{\\fontsize{12}{12}\\selectfont}
-    \\usepackage{hyperref}
-    \\usepackage{graphicx}
-    \\oddsidemargin 0in
-    \\evensidemargin 0in
-    \\textwidth 6.5in
-    \\topmargin -0.5in
-    \\textheight 9.0in
-    \\pagestyle{myheadings}  % Leave this command alone
-                [NO-DEFAULT-PACKAGES]
-                [EXTRA]"
-                   ("\\section{%s}" . "\\section*{%s}")
-                   ("\\subsection{%s}" . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-
-    (setq org-export-with-section-numbers nil)
-    (setq org-export-with-toc nil)
-    (setq org-latex-hyperref-template "")
-    (setq org-latex-with-hyperref nil)
-    (add-hook 'doc-view-mode-hook 'auto-revert-mode)
-    (require 'org)
-    (defun org-body-pdf ()
-      (interactive)
-      (org-latex-export-to-pdf (nil nil nil nil t)))
-
-
-    (setq org-export-with-author t)
-    (setq org-list-allow-alphabetical t)
-(add-to-list 'org-latex-classes
-               `("copernicus_discussions"
-                 "\\documentclass{copernicus_discussions}
-               [NO-DEFAULT-PACKAGES]
-               [PACKAGES]
-               [EXTRA]"
-                 ("\\section{%s}" . "\\section*{%s}")
-                 ("\\subsection{%s}" "\\newpage" "\\subsection*{%s}" "\\newpage")
-                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
-               )
-
-
+  (setq org-src-fontify-natively t)
+  (setq org-src-ask-before-returning-to-edit-buffer nil)
+  (setq org-src-window-setup (quote current-window))
 #+END_SRC
 
 

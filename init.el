@@ -59,6 +59,7 @@
         
         better-defaults
         spacemacs-theme
+        hc-zenburn-theme
         powerline
         spaceline
 
@@ -110,13 +111,13 @@
  ("s->"     . nxt)
  ("s-<"     . prv)
  ("s-d"     . sp-kill-sexp)
- ("M-g S"   . magit-stage-file)
- ("M-g C"   . magit-commit)
- ("M-g P"   . magit-push-popup)
+ ("M-g C-s"   . magit-stage-file)
+ ("M-g C-c"   . magit-commit)
+ ("M-g p"   . magit-push-popup)
  ("M-;"   . evilnc-comment-or-uncomment-lines)
  )
 
-(load-theme 'spacemacs-dark t)
+(load-theme 'hc-zenburn t)
 
 ;;;; Package configuration
 
@@ -132,6 +133,21 @@
   (setq nlinum-format " %d ")
   (add-hook 'nlinum-mode-hook 'nlinum-tweak)
   )
+
+(use-package god-mode
+  :bind
+  (("C-q" . god-mode-all)
+   )
+  )
+(defun my-update-cursor ()
+  (interactive)
+  (setq cursor-type (if (or god-local-mode buffer-read-only)
+                        'box
+                      'bar)))
+(define-key god-local-mode-map (kbd "i") 'god-local-mode)
+(add-hook 'god-mode-enabled-hook 'my-update-cursor)
+(define-key god-local-mode-map (kbd ".") 'repeat)
+(add-hook 'god-mode-disabled-hook 'my-update-cursor)
 
 (use-package powerline
   :config
@@ -384,12 +400,16 @@
 (defun configure/nix-global ()
   (interactive)
   (find-file "/etc/nixos/configuration.nix"))
+
+(defun notes/to-learn ()
+  (interactive)
+  (find-file "~/to-learn.org"))
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(python-shell-interpreter "python"))
+ '(python-shell-interpreter "ipython"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

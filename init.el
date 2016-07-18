@@ -73,7 +73,7 @@
 
         flycheck
         magit
-        
+
         company
         nlinum
         undo-tree
@@ -98,6 +98,7 @@
 (rainbow-delimiters-mode)
 
 (require 'bind-key)
+
 (bind-keys
  ("C-x C-m" . execute-extended-command)
  ("C-x C-b" . ivy-switch-buffer)
@@ -113,7 +114,7 @@
  ("s-d"     . sp-kill-sexp)
  ("M-g C-s"   . magit-stage-file)
  ("M-g C-c"   . magit-commit)
- ("M-g p"   . magit-push-popup)
+ ("M-g C-p"   . magit-push-popup)
  ("M-;"   . evilnc-comment-or-uncomment-lines)
  )
 
@@ -136,17 +137,20 @@
 
 (use-package god-mode
   :bind
-  (("C-q" . god-mode-all)
-   )
+  (("C-q" . god-mode-all))
   )
+
+
+(define-key god-local-mode-map (kbd ".") 'repeat)
+(define-key god-local-mode-map (kbd "i") 'god-local-mode)
+
 (defun my-update-cursor ()
   (interactive)
   (setq cursor-type (if (or god-local-mode buffer-read-only)
                         'box
                       'bar)))
-(define-key god-local-mode-map (kbd "i") 'god-local-mode)
 (add-hook 'god-mode-enabled-hook 'my-update-cursor)
-(define-key god-local-mode-map (kbd ".") 'repeat)
+
 (add-hook 'god-mode-disabled-hook 'my-update-cursor)
 
 (use-package powerline
